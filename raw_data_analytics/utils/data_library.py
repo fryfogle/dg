@@ -26,7 +26,6 @@ class data_lib():
     # Accepts options i.e. dictionary of dictionary e.g. {'partition':{'partner':'','state',''},'value':{'nScreening':True,'nAdoption':true}}
     # This function is responsible to call function for checking validity of input and functions to make dataframes according to the inputs
     def handle_controller(self, args, options):
-
         final_df = pd.DataFrame()
 
         relevantPartitionDictionary = {}
@@ -43,7 +42,6 @@ class data_lib():
         self.categoryDictionary = ilib.initializeCategoryDict()
         self.headerDictionary = ilib.initializeHeaderDict()
         self.lookup_matrix = ilookup.read_lookup_csv()
-
         # --- checking validity of the partition fields and value fields entered by user ---
         if self.check_partitionfield_validity(options['partition']):
             for item in options['partition']:
@@ -52,23 +50,21 @@ class data_lib():
 
         else:
             print "Warning - Invalid input for partition fields"
-
         if self.check_valuefield_validity(options['value']):
-
             for item in options['value']:
-                if item == 'list' and options['value']['list'] != False:
-
+###########     
+                if (item == 'list' and options['value']['list'] != False)or(item == 'numVillage' and (options['value']['numVillage']=='numVillageScreening' or options['value']['numVillage']=='numVillageAdoption'))or(item == 'numBlock' and (options['value']['numBlock']=='numBlockScreening' or options['value']['numBlock']=='numBlockAdoption')):
                     relevantValueDictionary[options['value'][item]] = True
                     relevantPartitionDictionary[
                         self.categoryDictionary['partitionCumValues'][options['value'][item]]] = False
                     del relevantPartitionDictionary[self.categoryDictionary['partitionCumValues'][options['value'][item]]]
 
-                if options['value'][item] != False and item != 'list':
+                if options['value'][item] != False and item != 'list' and (options['value'][item]!='numVillageScreening'):#or options['value'][item]!='numBlockScreening'):
                     relevantValueDictionary[item] = options['value'][item]
-
+                
         else:
             print "Warning - Invalid input for Value fields"
-
+        print "rvd",relevantValueDictionary
         for input in relevantValueDictionary:
             queryComponents = self.getRequiredTables(relevantPartitionDictionary, input, args, self.lookup_matrix)
 #            print "----------------------------------Full SQL Query---------------------------"
@@ -149,26 +145,28 @@ class data_lib():
         groupbyResult = self.getGroupByComponent(partitionDict, valueDictElement)
 
         orderbyResult = self.getOrderByComponent(partitionDict, valueDictElement)
-#        print orderbyResult
-#        print "----------------------------------SELECT PART------------------------------"
-#        print selectResult
-#        print "----------------------------------FROM PART--------------------------------"
-#        print fromResult
-#       print "----------------------------------WHERE PART-------------------------------"
-#        print whereResult
-#        print "---------------------------------GROUP_BY PART----------------------------"
-#        print groupbyResult
-#        print "--------------------------------ORDER_BY PART-----------------------------"
-#        print orderbyResult
+        print "----------------------------------SELECT PART------------------------------"
+        print selectResult
+        print "----------------------------------FROM PART--------------------------------"
+        print fromResult
+        print "----------------------------------WHERE PART-------------------------------"
+        print whereResult
+        print "---------------------------------GROUP_BY PART----------------------------"
+        print groupbyResult
+        print "--------------------------------ORDER_BY PART-----------------------------"
+        print orderbyResult
         return (selectResult, fromResult, whereResult, groupbyResult, orderbyResult)
 
     def getSelectComponent(self, partitionElements, valueElement):
-
+        print partitionElements
+        print valueElement
         selectComponentList = []
         selectComponentKeysList = []
         idElementVal = -1
         idElementKey = ''
-        if not partitionElements and 'list' in valueElement:
+        
+        if (not partitionElements and 'list' in valueElement) or (not partitionElements and'numVillage' in valueElement) or (not partitionElements and'numBlock' in valueElement):
+            print("howdy")
             idElementVal = self.orderDictionary[self.categoryDictionary['partitionCumValues'][valueElement]]
             idElementKey = self.categoryDictionary['partitionCumValues'][valueElement]
 
@@ -183,14 +181,12 @@ class data_lib():
                 if self.orderDictionary[items] > idElementVal:
                     idElementVal = self.orderDictionary[items]
                     idElementKey = items
-
         self.idElementKey = idElementKey
         self.idElementValue = idElementVal
 
         selectComponentList.append(
             self.tableDictionary[self.idElementKey] + '.' + self.groupbyDictionary[self.idElementKey] + ' AS \'' + self.headerDictionary[self.idElementKey][
                 self.groupbyDictionary[self.idElementKey]] + '\'')
-
         for i in self.selectDictionary[valueElement]:
             if (self.selectDictionary[valueElement][i] == True):
                 x = ['count(', 'distinct']
@@ -214,7 +210,10 @@ class data_lib():
         return ','.join(selectComponentList)
 
     # Function to make tables by recursive calls for tables.
+
+
     def makeJoinTable(self, sourceTable, destinationTable, lookup_matrix, occuredTables, Dict):
+    #    print lookup_matrix[sourceTable]
         if (sourceTable not in occuredTables):
             for i in lookup_matrix[sourceTable][destinationTable]:
                 if (i[2] == 'self'):
@@ -263,6 +262,7 @@ class data_lib():
         if not partitionElements:
             if valueElement in self.categoryDictionary['partitionCumValues'].keys():
                 majorTablesList.append(self.tableDictionary[valueElement])
+
         return ' , '.join(list(set(majorTablesList)))
 
 
@@ -270,7 +270,7 @@ class data_lib():
     def getWhereComponent(self, partitionElements, valueElement, Dictionary, args, lookup_matrix):
         whereString = '1=1'
         whereComponentList = [whereString]
-#        print partitionElements
+        print "where ",partitionElements,' ',valueElement,' ',Dictionary 
 
         for items in partitionElements:
             ll=[]
