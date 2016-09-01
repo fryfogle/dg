@@ -20,12 +20,13 @@ tableDictionary={
     'attendance':'activities_personmeetingattendance',
     'numPerson':'people_person',
     'numAnimator':'people_animatorwisedata',
-    'numVillageAdoption':'activities_personadoptpractice',
+    'numVillageAdoption':'geographies_village',
     'numVillageScreening': 'activities_screeningwisedata', #TODO: Not Working
     'numVillagePartner':'people_person',
     'numVillageGroup':'people_persongroup',
-    'numBlockScreening':'activities_screeningwisedata',
+    'numBlockScreening':'geographies_block',
     'numBlock':'geographies_block',
+    'numBlockAdoption':'geographies_block',
     'numVillage':'geographies_village',
     'listPerson':'people_person',
     'listAnimator':'people_animatorwisedata',
@@ -71,6 +72,7 @@ whereDictionary={
     'numVillagePartner':'programs_partner.date_of_assosiation',
     'numVillageScreening':'activities_screeningwisedata.screening_date',
     'numBlockScreening':'activities_screeningwisedata.screening_date',
+    'numBlockAdoption':'activities_personadoptpractice.date_of_adoption',
     'numVillageGroup':'people_persongroup.time_created',
     'numBlockScreening':'activities_screeningwisedata.screening_date',
     'listVideoProduced':'production_date',
@@ -94,7 +96,7 @@ categoryDictionary={
                           'listGroup':'persongroup', 'listVillage':'village','listBlock':'block','listDistrict':'district','listState':'state',
                           'listCountry':'country','listPartner':'partner','numScreening':'numScreening','numVillageScreening':'video',
                           'numVillagePartner':'partner','numVillageCountry':'country','numVillageGroup':'persongroup','numVillagePerson':'person',
-                          'numVillageAnimator':'animator','numVillageBlock':'block','numVillageAdoption':'','numBlockScreening':''}
+                          'numVillageAnimator':'animator','numVillageBlock':'block','numVillageAdoption':'','numBlockScreening':'numBlock','numBlockAdoption':''}
 }
 
 groupbyDictionary={
@@ -112,6 +114,7 @@ groupbyDictionary={
     'sector':'id',
     'practice':'id',
     'topic':'id',
+    'numBlockAdoption':False,
     'numVillageAdoption':False,
     'numVillageGroup':'id',
     'numVillagePartner':'partner_id',
@@ -122,7 +125,6 @@ groupbyDictionary={
     'numAnimator':False,
     'numBlockScreening':False,
     'numVillageScreening':False,
-    'numBLockScreening':False,
     'numBlock':False,   #TODO:
     'numVillage':False, #TODO:
     'listPerson':'id',
@@ -160,8 +162,9 @@ selectDictionary={
     'numAdoption':{'count(person_id)':True,'count(distinct person_id)':True},
     'attendance':{'count(person_id)':False,'count(distinct person_id)':True},
 #    'numPeople':{'count(id)':True,'count(distinct id)':False},
-    'numBlockScreening':{'count(block_id)':False,'count(distict block_id)':False},
-    'numVillageAdoption':{'count(village_id)':False,'count(distinct village_id)':True},
+    'numBlockAdoption':{'count(id)':False,'count(distinct id)':True},
+    'numBlockScreening':{'count(id)':False,'count(distinct id)':True},
+    'numVillageAdoption':{'count(id)':False,'count(distinct id)':True},
     'numVillageGroup':{'count(village_id)':False,'count(distinct village_id)':True},
     'numVillagePartner':{'count(village_id)':False,'count(distinct village_id)':True},
     'numVillageScreening':{'count(village_id)':False,'count(distinct village_id)':True,'distinct(video_title)':True,'video_id':True},
@@ -204,8 +207,9 @@ headerDictionary = {
     'numAdoption':{'count(person_id)':'Number of Adoptions','count(distinct person_id)':'Unique Number of Adoptions'},
     'attendance':{'count(person_id)':'Number of Viewers','count(distinct person_id)':'Unqiue Number of Viewers'},
 #    'numPeople':{'count(id)':True,'count(distinct id)':False},
-    'numBlockScreening':{'count(block_id)':'Number of Blocks','count(distict block_id)':'Unique Number of Blocks'},
-    'numVillageAdoption':{'count(village_id)':'Number of Villages','count(distinct village_id)':'Unique Number of Villages'},
+    'numBlockAdoption':{'count(id)':'Number of Blocks','count(distinct id)':'Number of Unique Blocks'},
+    'numBlockScreening':{'count(id)':'Number of Blocks','count(distinct id)':'Unique Number of Blocks'},
+    'numVillageAdoption':{'count(id)':'Number of Villages','count(distinct id)':'Unique Number of Villages'},
     'numVillageGroup':{'count(village_id)':'Number of Villages','count(distinct village_id)':'Unique Number of Villages'},
     'numVillagePartner':{'count(village_id)': 'Number of Village','count(distinct village_id)':'Unique Number of Village'},
     'numVillageScreening':{'count(village_id)':'Number of Villages','count(distinct village_id)':'Unique Number of Villages','distinct(video_title)':'Video Screened','video_id':'Video ID'},

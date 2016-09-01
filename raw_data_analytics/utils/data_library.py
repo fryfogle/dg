@@ -32,6 +32,7 @@ class data_lib():
         return [elements for elements in ElementsList if not (elements in seen or seen_add(elements))]
 
     def handle_controller(self, args, options):
+        print options
         final_df = pd.DataFrame()
 
         relevantPartitionDictionary = {}
@@ -64,7 +65,7 @@ class data_lib():
                         self.categoryDictionary['partitionCumValues'][options['value'][item]]] = False
                     del relevantPartitionDictionary[self.categoryDictionary['partitionCumValues'][options['value'][item]]]
 
-                if options['value'][item] != False and item != 'list' and (options['value'][item]!='numVillageScreening'):#or options['value'][item]!='numBlockScreening'):
+                if options['value'][item] != False and item != 'list' and (options['value'][item]!='numVillageScreening') and (options['value'][item]!='numVillageAdoption') and (options['value'][item]!='numBlockScreening') and (options['value'][item]!='numBlockAdoption'):#or options['value'][item]!='numBlockScreening'):
                     relevantValueDictionary[item] = options['value'][item]
                 
         else:
@@ -215,7 +216,7 @@ class data_lib():
 
 
     def makeJoinTable(self, sourceTable, destinationTable, lookup_matrix, occuredTables, Dict):
-    #    print lookup_matrix[sourceTable]
+        print 'sou ',sourceTable ,' des' , destinationTable
         if (sourceTable not in occuredTables):
             for i in lookup_matrix[sourceTable][destinationTable]:
                 if (i[2] == 'self'):
