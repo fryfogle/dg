@@ -1,0 +1,65 @@
+<script src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" />
+<!--<link rel="stylesheet" media="screen, projection" href="{{STATIC_URL}}assets/styles/jquery.dataTables.css" />-->
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#from_date").change(function(){
+    	if($(this).val() > $("#to_date").val())
+    	{
+    		alert("From date should be less than to date");
+    		$(this).val($("#to_date").val());
+    	}
+    });
+    $("#to_date").change(function(){
+    	if($(this).val() < $("#from_date").val())
+    	{
+    		alert("From date should be less than to date");
+    		$(this).val($("#from_date").val());
+    	}
+    });
+});
+function get_data()
+    {
+    	to_date = $("#to_date").val();
+    	from_date = $("#from_date").val();
+	    $.get("/loop/date_wise_farmer_list",{to_date:to_date,from_date:from_date}).done(function(data){
+            farmer_data = JSON.parse(data); 
+            $('#info').DataTable( {
+        data: farmer_data,
+        destroy: true,
+        columns: [
+            { title: "Id" },
+            { title: "Farmer Name" },
+            { title: "Village Name" },
+            { title: "Due Amount" }
+        ],
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+
+    } );
+	    });
+	}
+</script>
+{{ test }}
+<form id="payment_form" method="POST" action=".">
+<h3> From: &nbsp;<input type="date" value="2016-10-25" id="from_date" name="from_date" size="20" min="2000-01-01" >&nbsp;&nbsp;
+     To: &nbsp; <input type="date" value="2016-10-25" id="to_date" name="to_date" size="20" min="2000-01-01"> </h3>
+     <input type="button" value="Show" onclick="get_data()">
+</form>
+<table id="info" class="display" width="100%"></table>
+
