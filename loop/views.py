@@ -7,11 +7,13 @@ from django.contrib import auth
 from django.http import HttpResponse
 from django.shortcuts import render, render_to_response
 from django.db.models import Count, Min, Sum, Avg, Max, F
+from django.db.models import Q
 
 from tastypie.models import ApiKey, create_api_key
 from models import LoopUser, CombinedTransaction, Village, Crop, Mandi, Farmer, DayTransportation, Gaddidar, Transporter, Language, CropLanguage, GaddidarCommission, GaddidarShareOutliers
 
 from loop_data_log import get_latest_timestamp
+from forms import UserPaymentForm
 
 # Create your views here.
 HELPLINE_NUMBER = "09891256494"
@@ -465,3 +467,22 @@ def payments(request):
     data = json.dumps(chart_dict, cls=DjangoJSONEncoder)
 
     return HttpResponse(data)
+
+@csrf_exempt
+def date_wise_payment(request):
+    if request.method == 'POST':
+        from_date = request.POST['from_date']
+        to_date = request.POST['to_date']
+        print to_date,from_date
+    return render_to_response('loop/date_wise_payment.html')
+
+
+def date_wise_farmer_list(request):
+    to_date = request.GET['to_date']
+    from_date = request.GET['from_date']
+    farmer_data = Farmer.objects.filter(Q(combinedtransaction__date__gte =  from_date) & Q(combinedtransaction__date__lte = to_date)).values('id','name').annotate(Due_amount = Sum('combinedtransaction__amount')).values_list('id','name','village__village_name','Due_amount')
+    #farmer_data = CombinedTransaction.objects.filter(Q(date__gte = from_date) & Q(date__lte = to_date))
+    farmer_data = [ list(farmer) for farmer in farmer_data]
+    resp = json.dumps(farmer_data)
+    return HttpResponse(resp)
+
