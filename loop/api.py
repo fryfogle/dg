@@ -195,6 +195,18 @@ class CombinedTransactionAuthorization(Authorization):
         else:
             raise NotFound("Not allowed to download Transaction")
 
+class GaddidarCommissionAuthorization(Authorization):
+    def read_list(self, object_list, bundle):
+        return object_list.filter(user_created_id=bundle.request.user.id).distinct()
+
+    def read_detail(self, object_list, bundle):
+        # Is the requested object owned by the user?
+        obj = object_list.filter(
+            user_created_id=bundle.request.user.id).distinct()
+        if obj:
+            return True
+        else:
+            raise NotFound("Not allowed to download Commissions")     
 
 class DayTransportationAuthorization(Authorization):
     def read_list(self, object_list, bundle):
@@ -316,6 +328,8 @@ class VillageResource(BaseResource):
     block = fields.ForeignKey(BlockResource, 'block', full=True)
 
     class Meta:
+        limit = 0
+        max_limit = 0
         allowed_methods = ['post', 'get']
         always_return_data = True
         queryset = Village.objects.all()
@@ -323,13 +337,14 @@ class VillageResource(BaseResource):
         authorization = VillageAuthorization('id__in')
         authentication = ApiKeyAuthentication()
         excludes = ('resource_uri', 'time_created', 'time_modified')
-
     dehydrate_block = partial(
         foreign_key_to_id, field_name='block', sub_field_names=['id'])
     hydrate_block = partial(dict_to_foreign_uri, field_name='block')
 
     def dehydrate(self, bundle):
+        farmer_count= Farmer.objects.filter(village_id = bundle.data['id']).count()
         bundle.data['online_id'] = bundle.data['id']
+        bundle.data['farmer_count'] = farmer_count
         return bundle
 
 
@@ -384,11 +399,15 @@ class LoopUserResource(BaseResource):
     assigned_mandis = fields.ListField()
 
     class Meta:
+        allowed_methods=['post','get']
         queryset = LoopUser.objects.prefetch_related(
             'assigned_villages', 'assigned_mandis','user').all()
         resource_name = 'loopuser'
+        always_return_data=True
         authorization = Authorization()
-
+        authentication = ApiKeyAuthentication()
+        excludes = ('resource_uri', 'time_created', 'time_modified')
+        
     hydrate_user = partial(dict_to_foreign_uri, field_name='user')
     hydrate_village = partial(dict_to_foreign_uri, field_name='village')
     hydrate_assigned_villages = partial(dict_to_foreign_uri_m2m, field_name='assigned_villages',
@@ -457,11 +476,11 @@ class LoopUserResource(BaseResource):
         return bundle
 
     def dehydrate_assigned_mandis(self, bundle):
-        return [{'id': assigned_mandi_obj.mandi_id, 'mandi_name':assigned_mandi_obj.mandi_name} for assigned_mandi_obj in
+        return [{'id': assigned_mandi_obj.id, 'mandi_name':assigned_mandi_obj.mandi_name} for assigned_mandi_obj in
                 set(bundle.obj.assigned_mandis.all())]
 
     def dehydrate_assigned_villages(self, bundle):
-        return [{'id': assigned_village_obj.village_id, 'village_name':assigned_village_obj.village_name} for assigned_village_obj in
+        return [{'id': assigned_village_obj.id, 'village_name':assigned_village_obj.village_name} for assigned_village_obj in
                 set(bundle.obj.assigned_villages.all())]
 
 class CropResource(BaseResource):
@@ -517,8 +536,7 @@ class MandiResource(BaseResource):
     def dehydrate(self, bundle):
         bundle.data['online_id'] = bundle.data['id']
         return bundle
-
-
+            
 class GaddidarResource(BaseResource):
     mandi = fields.ForeignKey(MandiResource, 'mandi', full=True)
 
@@ -540,7 +558,33 @@ class GaddidarResource(BaseResource):
         bundle.data['online_id'] = bundle.data['id']
         return bundle
 
+class GaddidarCommissionsResource(BaseResource):
+    gaddidar = fields.ForeignKey(GaddidarResource,'gaddidar')
+    mandi = fields.ForeignKey(MandiResource,'mandi')
 
+    class Meta:
+        allowed_methods=["post","get"]
+        limit = 0
+        max_limit = 0
+        queryset = GaddidarCommission.objects.all()
+        resource_name = 'gaddidarcommissions'
+        authorization = Authorization()
+        authentication = ApiKeyAuthentication()
+        always_return_data = True
+        excludes = ('resource_uri', 'time_created', 'time_modified')
+
+        dehydrate_gaddidar = partial(
+            foreign_key_to_id, field_name='gaddidar', sub_field_names=['id'])
+        hydrate_gaddidar = partial(dict_to_foreign_uri, field_name='gaddidar')
+
+        dehydrate_mandi = partial(
+            foreign_key_to_id, field_name='mandi', sub_field_names=['id'])
+        hydrate_mandi = partial(dict_to_foreign_uri, field_name='mandi')
+
+    def dehydrate(self, bundle):
+        bundle.data['online_id'] = bundle.data['id']
+        return bundle
+        
 class VehicleResource(BaseResource):
     class Meta:
         limit = 0
