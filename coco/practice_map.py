@@ -86,6 +86,7 @@ class PracticeMapping(object):
                              'Category',
                              'Sub Category',
                              'Practice',
+                             'YouTubeID'
                              ])
 
             vid_obj = Video.objects.filter(village__block__district__state__country_id=1).values('id', 'title',
@@ -98,6 +99,7 @@ class PracticeMapping(object):
                                            'related_practice_id',
                                            'related_practice__practice_name',
                                            'videopractice__videopractice_name',
+                                           'youtubeid',
                                            ).order_by('-time_created')
             for idx, iterable in enumerate(vid_obj):
                 rp = iterable.get('related_practice__practice_name')
@@ -114,6 +116,7 @@ class PracticeMapping(object):
                                     calculate_category(rp, iterable.get('category__category__name'), rp_list_value),
                                     check_value(iterable.get('subcategory__subcategory_name')),
                                     check_value(iterable.get('videopractice__videopractice_name')),
+                                    iterable.get('youtubeid')
                                     ])
                 except Exception as e:
                     print e
