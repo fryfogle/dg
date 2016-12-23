@@ -7,7 +7,7 @@ from dg.settings import EMAIL_HOST_USER
 #-------------------------------------------------------------------------------
 def common_send_email(subject, recipients, file, bcc=[], from_email=None):
     """
-    This method is a common method to send email via the bhane system.
+    This method is a common method to send email
     """
 
     if not from_email:
@@ -26,6 +26,11 @@ def common_send_email(subject, recipients, file, bcc=[], from_email=None):
     msg.send()
 
 
+def write_sheet_heading(ws_obj, heading_str):
+    ws_obj.set_column('A:F',12)
+    ws_obj.merge_range('A1:F1', heading_str)
+    return ws_obj
+
 def set_columns_width(ws_obj):
     ws_obj.set_column('A:A',15)
     ws_obj.set_column('B:B',15)
@@ -40,26 +45,28 @@ def set_columns_width(ws_obj):
 
 
 def write_headers_in_sheet(ws_obj, format_str):
-        ws_obj.write('A1', 'Sno', format_str)
-        ws_obj.write('B1', 'Aggregator', format_str)
-        ws_obj.write('C1', 'Village', format_str)
-        ws_obj.write('D1', 'Farmer_ID', format_str)
-        ws_obj.write('E1', 'Farmer', format_str)
-        ws_obj.write('F1', 'Mobile Number', format_str)
-        ws_obj.write('G1', 'Farmer Frequency', format_str)
-        ws_obj.write('H1', 'Mobile Number Frequency', format_str)
+        ws_obj.write('A3', 'Sno', format_str)
+        ws_obj.write('B3', 'Aggregator', format_str)
+        ws_obj.write('C3', 'Village', format_str)
+        ws_obj.write('D3', 'Farmer_ID', format_str)
+        ws_obj.write('E3', 'Farmer', format_str)
+        ws_obj.write('F3', 'Mobile Number', format_str)
+        ws_obj.write('G3', 'Farmer Frequency', format_str)
+        ws_obj.write('H3', 'Mobile Number Frequency', format_str)
         return ws_obj
 
     
 def write_data_in_sheet(ws_obj, sheet_data):
-        row = 1
+        row = 3
+        sno = 1
         for item in sheet_data:
             col = 0
             item = list(item)
-            item.insert(0, row)
+            item.insert(0, sno)
             for sub_item in item:
                 ws_obj.write(row, col, sub_item)
                 col += 1
             row += 1
+            sno += 1
 
         return ws_obj 
