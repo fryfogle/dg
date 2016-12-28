@@ -1,7 +1,7 @@
 from tastypie.exceptions import ImmediateHttpResponse, NotFound
 from tastypie.authentication import Authentication, ApiKeyAuthentication
 from tastypie.authorization import Authorization
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource,Resource
 from django.forms.models import model_to_dict
 from tastypie import fields, utils
 from tastypie import bundle
@@ -552,6 +552,50 @@ class GaddidarResource(BaseResource):
         bundle.data['online_id'] = bundle.data['id']
         return bundle
 
+class GaddidarExtention(Resource):
+    extention = fields.CharField(attribute='extention')
+    phone = fields.CharField(attribute='phone')
+
+    class Meta:
+        resource_name ="gaddidar_extention"
+        allowed_methods=["get"]
+        values =['extention']
+        include_resource_uri =False
+
+    def get_object_list(self, request):
+        return [self.obj_get(request)]
+
+    def obj_get_list(self, bundle, **kwargs):
+        return [self.obj_get(bundle)]
+
+    def obj_get(self, bundle, **kwargs):
+        gaddidarObject = Gaddidar.objects.get(id = bundle.request.GET['gaddidar'])
+        gaddidarExtention = Gaddidar.__extention__(gaddidarObject)
+        gaddidarPhone = Gaddidar.__getphone__(gaddidarObject)
+        extentionResponse = ExtentionObject()
+        extentionResponse.extention = gaddidarExtention
+        extentionResponse.phone = gaddidarPhone
+        return extentionResponse
+
+class ExtentionObject(object):
+    def __init__(self, initial=None):
+        self.__dict__['_data'] = {}
+        if initial:
+            self.update(initial)
+
+    def __getattr__(self, name):
+        return self._data.get(name, None)
+
+    def __setattr__(self, name, value):
+        self.__dict__['_data'][name] = value
+
+    def update(self, other):
+        for k in other:
+            self.__setattr__(k, other[k])
+
+    def to_dict(self):
+        return self._data        
+        
 
 class VehicleResource(BaseResource):
     class Meta:

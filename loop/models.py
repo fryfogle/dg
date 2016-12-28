@@ -183,6 +183,12 @@ class Gaddidar(LoopModel):
     def __unicode__(self):
         return self.gaddidar_name
 
+    def __extention__(self):
+        value = self.id
+        return '{0:03d}'.format(value)
+    def __getphone__(self):
+        return self.gaddidar_phone
+
     class Meta:
         unique_together = ("gaddidar_phone", "gaddidar_name")
 
