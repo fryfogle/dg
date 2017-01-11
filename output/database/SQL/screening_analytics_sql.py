@@ -4,7 +4,7 @@ def distinct_attendees(geog, id, from_date, to_date, partners):
     sql_ds = get_init_sql_ds();
     sql_ds['select'].append("COUNT(DISTINCT PMAM.person_id) as tot_dist_per")
     sql_ds['from'].append("person_meeting_attendance_myisam PMAM")
-    sql_ds['force index'].append("(person_meeting_attendance_myisam_village_id)")
+    # sql_ds['force index'].append("(person_meeting_attendance_myisam_village_id)")
     filter_partner_geog_date(sql_ds,"PMAM","PMAM.date",geog,id,from_date,to_date,partners);
     return join_sql_ds(sql_ds);
 
@@ -21,7 +21,7 @@ def average_video_by_active_data(geog, id, from_date, to_date, partners):
 def screening_attendees_malefemaleratio(geog,id, from_date, to_date, partners):
     sql_ds = get_init_sql_ds();
     sql_ds['select'].extend(["gender AS pie_key", "COUNT(DISTINCT PMAM.person_id) AS count"]);
-    sql_ds['from'].append("person_meeting_attendance_myisam PMAM");
+    # sql_ds['from'].append("person_meeting_attendance_myisam PMAM");
     sql_ds['force index'].append("(person_meeting_attendance_myisam_village_id)");
     filter_partner_geog_date(sql_ds,"PMAM","PMAM.date",geog,id,from_date,to_date,partners);
     sql_ds['group by'].append('PMAM.gender')

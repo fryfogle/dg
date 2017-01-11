@@ -154,7 +154,7 @@ def overview(geog, id, from_date, to_date, partners, type):
     elif(type=='person'):
         sql_ds['select'].append('COUNT(DISTINCT PMAM.person_id) as tot_per')
         sql_ds['from'].append('person_meeting_attendance_myisam PMAM')
-        sql_ds['force index'].append('(person_meeting_attendance_myisam_village_id)')
+        # sql_ds['force index'].append('(person_meeting_attendance_myisam_village_id)')
         main_tab_abb = "PMAM"
         date_field = "PMAM.date"
  
@@ -187,7 +187,7 @@ def overview_line_chart(geog,id,from_date, to_date, partners,type):
         sql_inn_ds = get_init_sql_ds();
         sql_inn_ds['select'].extend(["PMAM.person_id" , "MIN(date) AS date"])
         sql_inn_ds['from'].append("person_meeting_attendance_myisam PMAM");
-        sql_inn_ds['force index'].append("(person_meeting_attendance_myisam_village_id)");
+        # sql_inn_ds['force index'].append("(person_meeting_attendance_myisam_village_id)");
         filter_partner_geog_date(sql_inn_ds,'PMAM','dummy',geog,id,None,None,partners)
         sql_inn_ds['group by'].append("person_id");
 
