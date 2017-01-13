@@ -115,21 +115,23 @@ class PracticeMapping(object):
             outfile = open(filename, 'wb')
             writer = csv.writer(outfile)
             writer.writerow([
-                             # 'State',
+                             'State',
                              'District',
                              'Video ID',
                              'Video Name',
-                             '',
-                             'Related Practices',
-                             '',
+                             # '',
+                             # 'Related Practices',
+                             # '',
+                             'Production Date',
                              'Category',
                              'Sub Category',
                              'Practice',
-                             # 'YouTubeID'
+                             'YouTubeID',
+
                              ])
 
             vid_obj = Video.objects.filter(village__block__district__state__country_id=1,
-                                           village__block__district__state_id=14).values('id', 'title',
+                                           production_date__gte="2016-07-01").values('id', 'title',
                                            'village__block__district__district_name',
                                            'village__block__district__state__state_name',
                                            'village__block__district__state_id',
@@ -139,29 +141,33 @@ class PracticeMapping(object):
                                            'related_practice_id',
                                            'related_practice__practice_name',
                                            'videopractice__videopractice_name',
-                                           # 'youtubeid',
+                                           'youtubeid',
+                                           'production_date'
                                            ).order_by('-id')
             for idx, iterable in enumerate(vid_obj):
-                rp = iterable.get('related_practice__practice_name')
-                if rp is not None:
-                    # begin manipulation from here
-                    rp_list_value = break_word_value_and_identify_category(rp)
-                    rp_list_value_for_subcategory = \
-                        break_word_value_and_identify_subcategory(rp)
+                # rp = iterable.get('related_practice__practice_name')
+                # if rp is not None:
+                #     # begin manipulation from here
+                #     rp_list_value = break_word_value_and_identify_category(rp)
+                #     rp_list_value_for_subcategory = \
+                #         break_word_value_and_identify_subcategory(rp)
                 try:
                     writer.writerow([
-                                    # check_value(iterable.get('village__block__district__state__state_name')),
+                                    check_value(iterable.get('village__block__district__state__state_name')),
                                     check_value(iterable.get('village__block__district__district_name')),
                                     iterable.get('id'),
                                     check_value(iterable.get('title')),
-                                    '',
-                                    check_value(iterable.get('related_practice__practice_name')),
-                                    '',
-                                    calculate_category(rp, iterable.get('category__category_name'), rp_list_value),
-                                    calculate_subcategory(rp, iterable.get('subcategory__subcategory_name'), rp_list_value_for_subcategory),
+                                    # '',
+                                    # check_value(iterable.get('related_practice__practice_name')),
+                                    # '',
+                                    iterable.get('production_date'),
+                                    check_value(iterable.get('category__category_name')),
+                                    check_value(iterable.get('subcategory__subcategory_name')),
+                                    # calculate_category(rp, iterable.get('category__category_name'), rp_list_value),
+                                    # calculate_subcategory(rp, iterable.get('category__subcategory_name'), rp_list_value_for_subcategory),
                                     #check_value(iterable.get('subcategory__subcategory_name')),
                                     check_value(iterable.get('videopractice__videopractice_name')),
-                                    # iterable.get('youtubeid')
+                                    iterable.get('youtubeid'),
                                     ])
                 except Exception as e:
                     print e
