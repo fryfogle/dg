@@ -154,7 +154,7 @@ def overview(geog, id, from_date, to_date, partners, type):
     elif(type=='person'):
         sql_ds['select'].append('COUNT(DISTINCT PMAM.person_id) as tot_per')
         sql_ds['from'].append('person_meeting_attendance_myisam PMAM')
-        # sql_ds['force index'].append('(person_meeting_attendance_myisam_village_id)')
+        sql_ds['use index'].append('()')
         main_tab_abb = "PMAM"
         date_field = "PMAM.date"
  
@@ -213,12 +213,11 @@ def overview_line_chart(geog,id,from_date, to_date, partners,type):
     elif(type=='adoption'):
         sql_ds['select'].extend(["date", "SUM(total_adoption)"])
         sql_ds['from'].append("village_precalculation_copy VPC");
-        sql_ds['force index'].append("(village_precalculation_copy_village_id)");
+        sql_ds['force index'].append("(village_precalculation_copy_date)");
+        if(from_date is not None and to_date is not None):
+            sql_ds['WHERE'].append("date between '"+from_date+"' and '"+to_date+"'")
         filter_partner_geog_date(sql_ds,'VPC','dummy',geog,id,None,None,partners)
         sql_ds['group by'].append("date");
-
-    if(from_date is not None and to_date is not None):
-        sql_ds['having'].append("date between '"+from_date+"' and '"+to_date+"'")
 
     return join_sql_ds(sql_ds)
 
