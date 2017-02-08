@@ -670,34 +670,53 @@ def payments(request):
     return HttpResponse(data)
 
 def write_log(logfile,module,log):
+    print 3001
     curr_india_time = datetime.datetime.now(timezone('Asia/Kolkata'))
+    print 3002
     with open(logfile, 'ab') as csvfile:
+        print 3003
         file_write = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
         file_write.writerow([now_india_time,module,log])
+        print 3004
 
 def save_call_log(call_id,from_number,to_number,call_type,start_time):
+    print 2001
     call_obj = HelplineCallLog(call_id=call_id,from_number=from_number,to_number=to_number,call_type=call_type,start_time=start_time)
+    print 2002
     try:
+        print 2003
         call_obj.save()
     except Exception as e:
         # if error then log
+        print 2004
         module = 'save_call_log'
+        print 2005
         write_log(HELPLINE_LOG_FILE,module,str(e))
+        print 2006
 
 def save_sms_log(sms_id,from_number,to_number,sms_body,sent_time):
+    print 1000
     sms_obj = HelplineSmsLog(sms_id=sms_id,from_number=from_number,to_number=to_number,sms_body=sms_body,sent_time=sent_time)
+    print 1001
     try:
+        print 1002
         sms_obj.save()
     except Exception as e:
+        print 1003
         # if error then log
         module = 'save_sms_log'
+        print 1004
         write_log(HELPLINE_LOG_FILE,module,str(e))
 
 def get_status(call_id):
+    print 401
     call_status_url = "https://%s:%s@twilix.exotel.in/v1/Accounts/%s/Calls/%s?details=true"%(EXOTEL_ID,EXOTEL_TOKEN,EXOTEL_ID,call_id)
+    print 402
     response = requests.get(call_status_url)
     call_status = dict()
+    print 403
     if response.status_code == 200:
+        print 404
         response_tree = xml_parse.fromstring(response.text)
         call_detail = response_tree.findall('Call')[0]
         call_status['response_code'] = 200
@@ -709,257 +728,377 @@ def get_status(call_id):
         extra_detail = call_detail.findall('Details')[0]
         call_status['from_status'] = str(extra_detail.find('Leg1Status').text)
         call_status['to_status'] = str(extra_detail.find('Leg2Status').text)
+        print 405
     elif response.status_code == 429:
+        print 406
         call_status['response_code'] = 429
     else:
+        print 407
         call_status['response_code'] = response.status_code
+    print 408
     return call_status
 
 def get_info_through_api(outgoing_call_id):
+    print 301
     call_status = get_status(outgoing_call_id)
+    print 302
     if call_status['response_code'] == 200:
+        print 303
         # Search latest pending Incoming object
         incoming_obj = HelplineIncoming.objects.filter(from_number=call_status['to'],call_status=0).order_by('-id')
         expert_obj = HelplineExpert.objects.filter(phone_number=call_status['from'])
+        print 304
         if len(incoming_obj) > 0 and len(expert_obj) > 0:
+            print 305
             incoming_obj = incoming_obj[0]
             expert_obj = expert_obj[0]
             to_number = call_status['to']
+            print 306
             return (incoming_obj,expert_obj,to_number)
+    print 307
     return ''
 
 def make_helpline_call(incoming_call_obj,from_number_obj,to_number):
+    print 201
     call_request_url = 'https://%s:%s@twilix.exotel.in/v1/Accounts/%s/Calls/connect'%(EXOTEL_ID,EXOTEL_TOKEN,EXOTEL_ID)
     call_response_url = 'http://sandbox.digitalgreen.org/loop/helpline_call_response/'
     #call_response_url = 'http://www.digitalgreen.org/loop/helpline_call_response/'
     from_number = from_number_obj.phone_number
     parameters = {'From':from_number,'To':to_number,'CallerId':EXOTEL_HELPLINE_NUMBER,'CallType':'trans','StatusCallback':call_response_url}
+    print 202
     response = requests.post(call_request_url,data=parameters)
+    print 203
     if response.status_code == 200:
+        print 204
         response_tree = xml_parse.fromstring(response.text)
         call_detail = response_tree.findall('Call')[0]
         outgoing_call_id = str(call_detail.find('Sid').text)
         outgoing_call_time = str(call_detail.find('StartTime').text)
+        print 205
         save_call_log(outgoing_call_id,from_number,to_number,1,outgoing_call_time)
+        print 206
         outgoing_obj = HelplineOutgoing(call_id=outgoing_call_id,incoming_call=incoming_call_obj,outgoing_time=outgoing_call_time,from_number=from_number_obj,to_number=to_number)
+        print 207
         try:
+            print 208
             outgoing_obj.save()    
+            print 209
         except Exception as e:
+            print 210
             # Save Errors in Logs
             module = 'make_helpline_call'
             write_log(HELPLINE_LOG_FILE,module,str(e))
+            print 211
     elif response.status_code == 429:
+        print 212
         # Enter in Log
         module = 'make_helpline_call'
         log = 'Status Code: %s (Parameters: %s)'%(str(response.status_code),parameters)
         write_log(HELPLINE_LOG_FILE,module,str(e))
+        print 213
     else:
+        print 214
         # Enter in Log
         module = 'make_helpline_call'
         log = 'Status Code: %s (Parameters: %s)'%(str(response.status_code),parameters)
+        print 215
         write_log(HELPLINE_LOG_FILE,module,str(e))
+        print 216
 
 def send_helpline_sms(from_number,to_number,sms_body):
+    print 110
     sms_request_url = 'https://%s:%s@twilix.exotel.in/v1/Accounts/%s/Sms/send'%(EXOTEL_ID,EXOTEL_TOKEN,EXOTEL_ID)
     parameters = {'From':from_number,'To':to_number,'Body':sms_body,'Priority':'high'}
+    print 111
     response = requests.post(sms_request_url,data=parameters)
+    print 112
     if response.status_code == 200:
+        print 113
         response_tree = xml_parse.fromstring(response.text)
         sms_detail = response_tree.findall('SMSMessage')[0]
         sms_id = str(sms_detail.find('Sid').text)
         sent_time = str(sms_detail.find('DateCreated').text)
         save_sms_log(sms_id,from_number,to_number,sms_body,sent_time)
+        print 114
     else:
+        print 115
         module = 'send_helpline_sms'
         log = "Status Code: %s (Parameters: %s)"%(str(response.status_code),parameters)
+        print 116
         write_log(HELPLINE_LOG_FILE,module,log)
+        print 117
  
 def send_greeting(to_number):
+    print 108
     greeting_request_url = 'https://%s:%s@twilix.exotel.in/v1/Accounts/%s/Calls/connect'%(EXOTEL_ID,EXOTEL_TOKEN,EXOTEL_ID)
     greeting_app_url = 'http://my.exotel.in/exoml/start/%s'%(NO_EXPERT_GREETING_APP_ID,)
     parameters = {'From':to_number,'CallerId':EXOTEL_HELPLINE_NUMBER,'CallType':'trans','Url':greeting_app_url}
+    print 109
     response = requests.post(greeting_request_url,data=parameters)
     
 def fetch_info_of_incoming_call(request):
+    print 106
     call_id = str(request.GET.getlist('CallSid')[0])
     farmer_number = str(request.GET.getlist('From')[0])
     dg_number = str(request.GET.getlist('To')[0])
     incoming_time = str(request.GET.getlist('StartTime')[0])
+    print 107
     return (call_id,farmer_number,dg_number,incoming_time)
 
 def update_incoming_obj(incoming_obj,call_status,recording_url,expert_obj,resolved_time):
+    print 101
     incoming_obj.call_status = call_status
     incoming_obj.recording_url = recording_url
     incoming_obj.resolved_by = expert_obj
     incoming_obj.resolved_time = resolved_time
     try:
+        print 102
         incoming_obj.save()
     except Exception as e:
+        print 103
         # if error in updating incoming object then Log
         module = 'update_incoming_obj'
+        print 104
         write_log(HELPLINE_LOG_FILE,module,str(e))
+        print 105
 
 def helpline_incoming(request):
     if request.method == 'GET':
+        print 1
         call_id,farmer_number,dg_number,incoming_time = fetch_info_of_incoming_call(request)
         save_call_log(call_id,farmer_number,dg_number,0,incoming_time)
         incoming_call_obj = HelplineIncoming.objects.filter(from_number=farmer_number,call_status=0).order_by('-id')
         # If No pending call with this number
+        print 2
         if len(incoming_call_obj) == 0:
+            print 3
             incoming_call_obj = HelplineIncoming(call_id=call_id, from_number=farmer_number, to_number=dg_number, incoming_time=incoming_time, last_incoming_time=incoming_time)
             try:
+                print 4
                 incoming_call_obj.save()
             except Exception as e:
                 # Write Exception to Log file
+                print 5
                 module = 'helpline_incoming (New Call)'
                 write_log(HELPLINE_LOG_FILE,module,str(e))
+                print 6
                 return HttpResponse(status=500)
+            print 7
             expert_obj = HelplineExpert.objects.filter(expert_status=1)[:1]
             # Initiate Call if Expert is available
             if len(expert_obj) > 0:
+                print 8
                 make_helpline_call(incoming_call_obj,expert_obj[0],farmer_number)
             # Send Greeting if No Expert is available
             else:
+                print 9
                 send_greeting(farmer_number)
+            print 10
             return HttpResponse(status=200)
         # If pending call exist for this number
         else:
             # Update last incoming time for this pending call
+            print 11
             incoming_call_obj = incoming_call_obj[0]
             incoming_call_obj.last_incoming_time = incoming_time
             try:
+                print 12
                 incoming_call_obj.save()
             except Exception as e:
+                print 13
                 # Write Exception to Log file
                 module = 'helpline_incoming (Old Call)'
                 write_log(HELPLINE_LOG_FILE,module,str(e))
+            print 14
             latest_outgoing_of_incoming = HelplineOutgoing.objects.filter(incoming_call=incoming_call_obj).order_by('-id').values_list('call_id', flat=True)[:1]
             if len(latest_outgoing_of_incoming) != 0:
+                print 15
                 call_status = get_status(latest_outgoing_of_incoming[0])
             else: 
                 call_status = ''
             # Check If Pending call is already in-progress
+            print 16
             if call_status != '' and call_status['response_code'] == 200 and (call_status['status'] in ('ringing', 'in-progress')):
+                print 17
                 return HttpResponse(status=200)
+            print 18
             expert_obj = HelplineExpert.objects.filter(expert_status=1)[:1]
             # Initiate Call if Expert is available
             if len(expert_obj) > 0:
+                print 19
                 make_helpline_call(incoming_call_obj,expert_obj[0],farmer_number)
             # Send Greeting if No Expert is available
             else:
+                print 20
                 send_greeting(farmer_number)
+            print 21
             return HttpResponse(status=200)
     else:
+        print 22
         return HttpResponse(status=403)
 
 @csrf_exempt
 def helpline_call_response(request):
     if request.method == 'POST':
+        print 23
         status = str(request.POST.getlist('Status')[0])
         outgoing_call_id = str(request.POST.getlist('CallSid')[0])
         outgoing_obj = HelplineOutgoing.objects.filter(call_id=outgoing_call_id).select_related('incoming_call','from_number').order_by('-id')
         outgoing_obj = outgoing_obj[0] if len(outgoing_obj) > 0 else ''
         # If call Successfully completed then mark call as resolved
+        print 24
         if status == 'completed':
+            print 25
             recording_url = str(request.POST.getlist('RecordingUrl')[0])
-            resolved_time = str(request.POST.getlist('DateUpdated')[0])            
+            resolved_time = str(request.POST.getlist('DateUpdated')[0])  
+            print 26          
             if outgoing_obj:
+                print 27
                 incoming_obj = outgoing_obj.incoming_call
                 expert_obj = outgoing_obj.from_number
                 update_incoming_obj(incoming_obj,1,recording_url,expert_obj,resolved_time)
             else:
+                print 28
                 # if outgoing object not found then get detail by call Exotel API
                 call_detail = get_info_through_api(outgoing_call_id)
                 if call_detail != '':
+                    print 29
                     incoming_obj = call_detail[0]
                     expert_obj = call_detail[1]
                     update_incoming_obj(incoming_obj,1,recording_url,expert_obj,resolved_time)
+                    print 30
         elif status == 'failed':
+            print 31
             if outgoing_obj:
+                print 32
                 farmer_number = outgoing_obj.to_number
                 #send sms to Notify User about Later Call
                 sms_body = helpline_data['sms_body']
                 send_helpline_sms(EXOTEL_HELPLINE_NUMBER,farmer_number,sms_body)
+                print 33
             else:
+                print 34
                 call_detail = get_info_through_api(outgoing_call_id)
                 if call_detail != '':
+                    print 35
                     farmer_number = call_detail[2]
                     #send sms to Notify User about Later Call
                     sms_body = helpline_data['sms_body']
                     send_helpline_sms(EXOTEL_HELPLINE_NUMBER,farmer_number,sms_body)
+                    print 36
         elif status == 'no-answer' or status == 'busy':  
+            print 37
             call_status = get_status(outgoing_call_id)
             if call_status['response_code'] == 200:
+                print 38
                 # if expert pick call and (not farmer or farmer busy)
                 if call_status['from_status'] == 'completed':
+                    print 39
                     if outgoing_obj:
+                        print 40
                         farmer_number = outgoing_obj.to_number
                     else:
+                        print 41
                         farmer_number = call_status['to']                    
                     #send sms to Notify User about Later Call
+                    print 42
                     sms_body = helpline_data['sms_body']
                     send_helpline_sms(EXOTEL_HELPLINE_NUMBER,farmer_number,sms_body)
+                    print 43
                     return HttpResponse(status=200)
+            print 44
             make_call = 0
             if outgoing_obj:
+                print 45
                 incoming_obj = outgoing_obj.incoming_call
                 expert_obj = outgoing_obj.from_number
                 to_number = outgoing_obj.to_number
                 make_call = 1
             else:
+                print 46
                 call_detail = get_info_through_api(outgoing_call_id)
                 if call_detail != '':
+                    print 47
                     incoming_obj = call_detail[0]
                     expert_obj = call_detail[1]
                     to_number = call_detail[2]
                     make_call = 1
+            print 48
             if make_call == 1:
+                print 49
                 # Find next expert
                 expert_numbers = list(HelplineExpert.objects.filter(expert_status=1))
+                print 50
                 try:
+                    print 51
                     expert_numbers = expert_numbers[expert_numbers.index(expert_obj)+1:]
+                    print 52
                 except Exception as e:
+                    print 53
                     expert_numbers = []
                     pass
                 # Make a call if next expert found
+                print 54
                 if len(expert_numbers) > 0:
+                    print 55
                     make_helpline_call(incoming_obj,expert_numbers[0],to_number)
                 # Send greeting if no expert is available
                 else:
+                    print 56
                     send_greeting(to_number)
+                    pritn 57
         else:
             #For other conditions write Logs
+            print 58
             module = 'helpline_call_response'
             log = 'Status: %s (outgoing_call_id: %s)'%(str(status),str(outgoing_call_id))
             write_log(HELPLINE_LOG_FILE,module,log)
+            print 59
         return HttpResponse(status=200)
     else:
+        print 60
         return HttpResponse(status=403)
 
 def helpline_offline(request):
     if request.method == 'GET':
+        print 61
         call_id,farmer_number,dg_number,incoming_time = fetch_info_of_incoming_call(request)
+        print 62
         save_call_log(call_id,farmer_number,dg_number,0,incoming_time)
+        print 63
         incoming_call_obj = HelplineIncoming.objects.filter(from_number=farmer_number,call_status=0).order_by('-id')
+        print 64
         if len(incoming_call_obj) == 0:
+            print 65
             incoming_call_obj = HelplineIncoming(call_id=call_id, from_number=farmer_number, to_number=dg_number, incoming_time=incoming_time, last_incoming_time=incoming_time)
+            print 66
             try:
+                print 67
                 incoming_call_obj.save()
             except Exception as e:
+                print 68
                 # Write Exception to Log file
                 module = 'helpline_offline'
                 write_log(HELPLINE_LOG_FILE,module,str(e))
+                print 69
                 return HttpResponse(status=500)
         else:
+            print 70
             # Update last incoming time for this pending call
             incoming_call_obj = incoming_call_obj[0]
             incoming_call_obj.last_incoming_time = incoming_time
+            print 71
             try:
+                print 72
                 incoming_call_obj.save()
             except Exception as e:
+                print 73
                 # Write Exception to Log file
                 module = 'helpline_offline'
+                print 74
                 write_log(HELPLINE_LOG_FILE,module,str(e))
+        print 75
         return HttpResponse(status=200)
     else:
+        print 76
         return HttpResponse(status=403)
