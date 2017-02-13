@@ -42,7 +42,7 @@ class AnalyticsSync():
         current_date = datetime.date.today()
         previous_year_date = date(
             current_date.year - 1, current_date.month, current_date.day)
-        database = 'digitalgreen_clone'
+        database = DATABASES['default']['NAME']
         print "Database:", database
 
         print time.time()
@@ -173,7 +173,7 @@ class AnalyticsSync():
                 person_village[id] = village
                 person_partner[id] = partner
 
-            pmas_df = DataFrame.from_records(PersonMeetingAttendance.objects.
+            pmas_df = DataFrame.from_records(PersonMeetingAttendance.objects.filter(screening__date__gt=previous_year_date).
                       values('id', 'person', 'screening__date','person__gender',
                       'screening__questions_asked', 'screening__village__id', 
                       'screening__partner__id').order_by('person', 
@@ -220,7 +220,7 @@ class AnalyticsSync():
                 else:
                     counts['tot_fem_att'] = counts['tot_fem_att'] + 1
 
-            scr = Screening.objects.values('questions_asked')
+            scr = Screening.objects.filter(date__gt=previous_year_date).values('questions_asked')
             for s in scr:
                 counts['tot_ques'] = counts['tot_ques'] + 1
 
@@ -233,7 +233,7 @@ class AnalyticsSync():
             print "Finished date calculations"
 
             # Total adoption calculation and gender wise adoption totals
-            paps = PersonAdoptPractice.objects.values_list(
+            paps = PersonAdoptPractice.objects.filter(date_of_adoption__gt=previous_year_date).values_list(
                 'person', 'date_of_adoption', 'person__village', 'person__gender',
                 'partner').order_by('person', 'date_of_adoption')
             # For counting total adoption by active attendees
@@ -280,7 +280,7 @@ class AnalyticsSync():
             print "Finished active attendance counts"
 
             # tot sc calculations
-            scs = Screening.objects.annotate(gr_size=Count(
+            scs = Screening.objects.filter(date__gt=previous_year_date).annotate(gr_size=Count(
                 'farmer_groups_targeted__person')).values_list('date', 'village',
                  'gr_size', 'partner')
             for dt, vil, gr_size, partner in scs:
@@ -290,7 +290,7 @@ class AnalyticsSync():
                     dt][vil][partner]['tot_exp_att'] + gr_size
             del scs
 
-            vids = Video.objects.values_list('id', 'production_date', 
+            vids = Video.objects.filter(production_date__gt=previous_year_date).values_list('id', 'production_date', 
                     'village', 'partner').order_by('id')
             cur_id = None
             for id, dt, vil, partner in vids:
@@ -333,7 +333,7 @@ class AnalyticsSync():
                 VILLAGE_ID, BLOCK_ID, DISTRICT_ID, STATE_ID, COUNTRY_ID, partner_id)\
                 VALUES "+','.join(values_list[(i-1)*5000:i*5000]))
             print "Total time on clone DB = ", time.time() - start_time
-            self.copy_myisam_main()
+            # self.copy_myisam_main()
         except MySQLdb.Error, e:
             print "Error %d: %s" % (e.args[0], e.args[1])
             sys.exit(1)

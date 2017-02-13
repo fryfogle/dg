@@ -35,4 +35,5 @@ WHERE `time_created`  > DATE_ADD(Now(), Interval -1 year);
 
 DELETE
 FROM
-	`village_precalculation_copy`;
+	`village_precalculation_copy`
+WHERE `date`  > DATE_ADD(Now(), Interval -1 year);
