@@ -79,6 +79,7 @@ class AnalyticsSync():
                                         district_id, state_id, country_id, sc.partner_id
                                         FROM activities_screening sc
                                         JOIN activities_screening_videoes_screened svs on svs.screening_id = sc.id
+                                        AND sc.date > DATE_ADD(Now(), Interval -1 year)
                                         JOIN activities_screening_farmer_groups_targeted sfgt on sfgt.screening_id = sc.id
                                         JOIN videos_video vid on vid.id = svs.video_id
                                         JOIN geographies_village v on v.id = sc.village_id
@@ -95,6 +96,7 @@ class AnalyticsSync():
                                         state_id, country_id, vid.partner_id
                                         FROM videos_video vid
                                         JOIN geographies_village v on v.id = vid.village_id
+                                        AND vid.production_date > DATE_ADD(Now(), Interval -1 year)
                                         JOIN geographies_block b on b.id = v.block_id
                                         JOIN geographies_district d on d.id = b.district_id
                                         JOIN geographies_state s on s.id = d.state_id
@@ -108,6 +110,7 @@ class AnalyticsSync():
                                         district_id, state_id, country_id, sc.partner_id
                                         FROM activities_personmeetingattendance pma 
                                         JOIN activities_screening sc on sc.id = pma.screening_id
+                                        AND sc.date > DATE_ADD(Now(), Interval -1 year)
                                         JOIN people_person p on p.id = pma.person_id
                                         JOIN geographies_village v on v.id = sc.village_id
                                         JOIN geographies_block b on b.id = v.block_id
@@ -122,6 +125,7 @@ class AnalyticsSync():
                                         district_id, state_id, country_id, pap.partner_id
                                         FROM activities_personadoptpractice pap
                                         JOIN people_person p on p.id = pap.person_id
+                                        AND pap.date_of_adoption > DATE_ADD(Now(), Interval -1 year)
                                         JOIN geographies_village v on v.id = p.village_id
                                         JOIN geographies_block b on b.id = v.block_id
                                         JOIN geographies_district d on d.id = b.district_id
@@ -137,6 +141,7 @@ class AnalyticsSync():
                                         B.video_id, D.title, C.PERSONGROUP_ID,D.youtubeid
                                         FROM activities_screening A
                                         JOIN activities_screening_videoes_screened B on B.screening_id=A.id
+                                        AND A.date > DATE_ADD(Now(), Interval -1 year)
                                         JOIN videos_video D on B.video_id=D.id 
                                         JOIN activities_screening_farmer_groups_targeted C on C.SCREENING_ID = A.id""")
             print "Finished insert into activities_screeningwisedata"
