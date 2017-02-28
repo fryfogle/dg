@@ -18,7 +18,7 @@ from tastypie.models import ApiKey, create_api_key
 from models import LoopUser, CombinedTransaction, Village, Crop, Mandi, Farmer, DayTransportation, Gaddidar, \
     Transporter, Language, CropLanguage, GaddidarCommission, GaddidarShareOutliers, AggregatorIncentive, \
     AggregatorShareOutliers, IncentiveParameter, IncentiveModel, HelplineExpert, HelplineIncoming, HelplineOutgoing, \
-    HelplineCallLog, HelplineSmsLog
+    HelplineCallLog, HelplineSmsLog, PhoneVerificationIVR
 
 from loop_data_log import get_latest_timestamp
 from loop.payment_template import *
@@ -722,3 +722,16 @@ def helpline_offline(request):
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=403)
+
+def ivr_phone_verify(request):
+    if request.method == 'GET':
+        call_id = str(request.POST.getlist('CallSid')[0])
+        to_number = str(request.POST.getlist('From')[0])
+        responsed_digit = str(request.POST.getlist('digits')[0]).strip('"')
+        ivr_obj = PhoneVerificationIVR(call_id=call_id,to_number=to_number,responsed_digit=responsed_digit)
+        try:
+            ivr_obj.save()
+        except Exception as e:
+            module = 'ivr_phone_verify'
+            write_log(HELPLINE_LOG_FILE,module,str(e))
+    return HttpResponse(status=200)
