@@ -545,3 +545,13 @@ class HelplineSmsLog(LoopModel):
 
     def __unicode__(self):
         return "%s (%s) (%s)" % (self.from_number, self.to_number, self.sent_time)
+
+
+class PhoneVerificationIVR(LoopModel):
+    id = models.AutoField(primary_key=True)
+    call_id = models.CharField(max_length=100)
+    to_number = models.CharField(max_length=20)
+    responsed_digit = models.CharField(max_length=20,null=True,blank=True)
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.to_number,self.responsed_digit)
