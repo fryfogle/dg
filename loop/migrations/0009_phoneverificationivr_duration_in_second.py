@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='phoneverificationivr',
             name='duration_in_second',
-            field=models.IntegerField(default=-1),
+            field=models.FloatField(default=-1),
         ),
     ]
