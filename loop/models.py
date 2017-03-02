@@ -552,6 +552,7 @@ class PhoneVerificationIVR(LoopModel):
     call_id = models.CharField(max_length=100)
     to_number = models.CharField(max_length=20)
     responsed_digit = models.CharField(max_length=20,null=True,blank=True)
+    duration_in_second = models.IntegerField(default=-1)
 
     def __unicode__(self):
-        return "%s (%s)" % (self.to_number,self.responsed_digit)
+        return "%s (%s) (%s)" % (self.to_number,self.responsed_digit,self.duration_in_second)
