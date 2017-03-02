@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='phoneverificationivr',
-            name='duration_in_second',
-            field=models.FloatField(default=-1),
+            name='call_duration',
+            field=models.DateTimeField(null=True, blank=True),
         ),
     ]

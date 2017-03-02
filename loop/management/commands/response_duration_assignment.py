@@ -16,16 +16,23 @@ HELPLINE_LOG_FILE = '%s/loop/helpline_log.log'%(MEDIA_ROOT,)
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+
         verification_objs = PhoneVerificationIVR.objects.all()
         for obj in verification_objs:
             call_id = str(obj.call_id)
             call_status = get_status(call_id)
-            duration_in_second = call_status['end_time']-call_status['start_time']
+            call_duration = datetime.datetime.strptime(call_status['end_time'],'%Y-%m-%d %H:%M:%S') \
+                             - datetime.datetime.strptime(call_status['start_time'],'%Y-%m-%d %H:%M:%S')
             try:
-                obj.duration_in_second = duration_in_second
+                obj.call_duration = call_duration
                 obj.save()
             except Exception as e:
+                print str(e)
                 module = "response_duration_assignment"
                 write_log(HELPLINE_LOG_FILE,module,str(e))
             time.sleep(1)
+
+
+
+
 
