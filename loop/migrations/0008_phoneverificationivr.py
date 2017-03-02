@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
                 ('call_id', models.CharField(max_length=100)),
                 ('to_number', models.CharField(max_length=20)),
                 ('responsed_digit', models.CharField(max_length=20, null=True, blank=True)),
+                ('call_duration', models.DateTimeField(null=True, blank=True)),
                 ('user_created', models.ForeignKey(related_name='loop_phoneverificationivr_created', blank=True, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('user_modified', models.ForeignKey(related_name='loop_phoneverificationivr_related_modified', blank=True, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
             ],
