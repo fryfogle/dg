@@ -725,9 +725,9 @@ def helpline_offline(request):
 
 def ivr_phone_verify(request):
     if request.method == 'GET':
-        call_id = str(request.POST.getlist('CallSid')[0])
-        to_number = str(request.POST.getlist('From')[0])
-        responsed_digit = str(request.POST.getlist('digits')[0]).strip('"')
+        call_id = str(request.GET.getlist('CallSid')[0])
+        to_number = str(request.GET.getlist('From')[0])
+        responsed_digit = str(request.GET.getlist('digits')[0]).strip('"')
         try:
             ivr_obj = PhoneVerificationIVR.objects.get(call_id=call_id,to_number=to_number)
         except Exception as e:
