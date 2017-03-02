@@ -21,8 +21,8 @@ class Command(BaseCommand):
         for obj in verification_objs:
             call_id = str(obj.call_id)
             call_status = get_status(call_id)
-            call_duration = datetime.datetime.strptime(call_status['end_time'],'%Y-%m-%d %H:%M:%S') \
-                             - datetime.datetime.strptime(call_status['start_time'],'%Y-%m-%d %H:%M:%S')
+            call_duration = str(datetime.datetime.strptime(call_status['end_time'],'%Y-%m-%d %H:%M:%S') \
+                             - datetime.datetime.strptime(call_status['start_time'],'%Y-%m-%d %H:%M:%S'))
             try:
                 obj.call_duration = call_duration
                 obj.save()
