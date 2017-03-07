@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        verification_objs = PhoneVerificationIVR.objects.all()
+        verification_objs = PhoneVerificationIVR.objects.filter(call_duration=None)
         for obj in verification_objs:
             call_id = str(obj.call_id)
             call_status = get_status(call_id)
