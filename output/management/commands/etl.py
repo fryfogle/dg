@@ -45,7 +45,7 @@ class AnalyticsSync():
         current_date = datetime.date.today()
         previous_year_date = date(
             current_date.year - 1, current_date.month, current_date.day)
-        database = 'digitalgreen_clone'
+        database = 'digitalgreen++'
         print "Database:", database
 
         print time.time()
@@ -65,6 +65,8 @@ class AnalyticsSync():
                                                  db=database,
                                                  charset='utf8',
                                                  use_unicode=True).cursor()
+            self.db_connection_clone.execute("show tables")
+            '''
             # village_partner_myisam
             self.db_connection_clone.execute("""INSERT INTO village_partner_myisam (partner_id,village_id,block_id,district_id,state_id,country_id)
                                         SELECT distinct pp.partner_id, gv.id ,gb.id ,gd.id ,gs.id ,gc.id
@@ -337,6 +339,7 @@ class AnalyticsSync():
                 VILLAGE_ID, BLOCK_ID, DISTRICT_ID, STATE_ID, COUNTRY_ID, partner_id)\
                 VALUES "+','.join(values_list[(i-1)*5000:i*5000]))
             print "Total time on clone DB = ", time.time() - start_time
+            '''
             self.copy_myisam_main()
         except MySQLdb.Error, e:
             print "Error %d: %s" % (e.args[0], e.args[1])

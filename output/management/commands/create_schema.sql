@@ -210,7 +210,7 @@ CREATE TABLE `village_partner_myisam` (
   `partner_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 )ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
+'''
 CREATE INDEX village_partner_myisam_geographies_partner ON village_partner_myisam(village_id,block_id,district_id,state_id,country_id,partner_id);
 CREATE INDEX village_partner_myisam_village_partner ON village_partner_myisam(village_id,partner_id);
 CREATE INDEX village_partner_myisam_block_partner ON village_partner_myisam(block_id,partner_id);
@@ -226,3 +226,4 @@ INSERT INTO `village_precalculation_copy` SELECT * FROM digitalgreen_clone.villa
 INSERT INTO `activities_screeningwisedata` SELECT * FROM digitalgreen_clone.activities_screeningwisedata;
 INSERT INTO `people_animatorwisedata` SELECT * FROM digitalgreen_clone.people_animatorwisedata;
 INSERT INTO `village_partner_myisam` SELECT * FROM digitalgreen_clone.village_partner_myisam;
+'''
