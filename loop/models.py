@@ -554,3 +554,12 @@ class HelplineSmsLog(LoopModel):
 
     def __unicode__(self):
         return "%s (%s) (%s)" % (self.from_number, self.to_number, self.sent_time)
+
+class Farmers(LoopModel):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    phone = models.CharField(max_length=13)
+    amount = models.CharField(max_length=12)
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.name, self.phone)

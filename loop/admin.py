@@ -174,6 +174,9 @@ class HelplineSmsLogAdmin(admin.ModelAdmin):
     list_display = ('id', 'sms_id', 'from_number', 'to_number', 'sent_time')
     search_fields = ['from_number', 'to_number', 'sent_time']
 
+class FarmersAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'phone', 'amount')
+
 loop_admin = LoopAdmin(name='loop_admin')
 loop_admin.register(Village, VillageAdmin)
 loop_admin.register(Block)
@@ -205,3 +208,4 @@ loop_admin.register(HelplineIncoming,HelplineIncomingAdmin)
 loop_admin.register(HelplineOutgoing,HelplineOutgoingAdmin)
 loop_admin.register(HelplineCallLog,HelplineCallLogAdmin)
 loop_admin.register(HelplineSmsLog,HelplineSmsLogAdmin)
+loop_admin.register(Farmers,FarmersAdmin)

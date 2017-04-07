@@ -18,7 +18,7 @@ from tastypie.models import ApiKey, create_api_key
 from models import LoopUser, CombinedTransaction, Village, Crop, Mandi, Farmer, DayTransportation, Gaddidar, \
     Transporter, Language, CropLanguage, GaddidarCommission, GaddidarShareOutliers, AggregatorIncentive, \
     AggregatorShareOutliers, IncentiveParameter, IncentiveModel, HelplineExpert, HelplineIncoming, HelplineOutgoing, \
-    HelplineCallLog, HelplineSmsLog
+    HelplineCallLog, HelplineSmsLog, Farmers
 
 from loop_data_log import get_latest_timestamp
 from loop.payment_template import *
@@ -756,3 +756,21 @@ def helpline_offline(request):
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=403)
+
+def dynamic_response(request):
+    print request.GET
+    url = 'https://s3.amazonaws.com/testivrdynamic/7420171.wav'# + '\n' + 'https://s3.amazonaws.com/testivrdynamic/7420172.wav'
+    return HttpResponse(url)
+    '''
+    call_id,farmer_number,dg_number,incoming_time = fetch_info_of_incoming_call(request)
+    request_url = "http://ivrapi.indiantts.co.in/tts?type=indiantts&api_key=2beeac80-095d-11e7-9f56-2f87492859b0&user_id=8937&audioformat=wav&samplerate=8000&numeric=hcurrency&channelType=mono&text="
+    farmer_no = [farmer_number,farmer_number.lstrip('0'),'+91'+farmer_number.lstrip('0'),'91'+farmer_number.lstrip('0')]
+    farmer = Farmers.objects.filter(phone__in=farmer_no)
+    if len(farmer) > 0:
+        farmer = farmer[0]
+        name = str(farmer.name)
+        amount = str(farmer.amount)
+    '''
+
+
+    
