@@ -51,4 +51,5 @@ urlpatterns = patterns('',
     url(r'^helpline_call_response/',helpline_call_response),
     url(r'^helpline_offline/',helpline_offline),
     url(r'^dynamic_response/',dynamic_response),
+    url(r'^receive_call/',receive_call),
     )
