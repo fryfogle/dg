@@ -758,6 +758,12 @@ def helpline_offline(request):
     else:
         return HttpResponse(status=403)
 
+def receive_call(request):
+    print request.GET
+    farmer_number = str(request.GET.getlist('From')[0])
+    connect_to_app(farmer_number,129525)
+    return HttpResponse(status=200)
+
 def make_request(url):
     response = requests.get(url)
     print response.status_code
@@ -765,7 +771,6 @@ def make_request(url):
     return response.text
 
 def dynamic_response(request):
-    print here
     print request.GET
     #url = 'https://s3.amazonaws.com/testivrdynamic/7420171.wav'# + '\n' + 'https://s3.amazonaws.com/testivrdynamic/7420172.wav'  
     #call_id,farmer_number,dg_number,incoming_time = fetch_info_of_incoming_call(request)
