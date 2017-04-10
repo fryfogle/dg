@@ -768,7 +768,8 @@ def dynamic_response(request):
     print here
     print request.GET
     #url = 'https://s3.amazonaws.com/testivrdynamic/7420171.wav'# + '\n' + 'https://s3.amazonaws.com/testivrdynamic/7420172.wav'  
-    call_id,farmer_number,dg_number,incoming_time = fetch_info_of_incoming_call(request)
+    #call_id,farmer_number,dg_number,incoming_time = fetch_info_of_incoming_call(request)
+    farmer_number = str(request.GET.getlist('From')[0])
     request_url = "http://ivrapi.indiantts.co.in/tts?type=indiantts&api_key=2beeac80-095d-11e7-9f56-2f87492859b0&user_id=8937&audioformat=wav&samplerate=8000&numeric=hcurrency&channelType=mono&text="
     farmer_no = [farmer_number,farmer_number.lstrip('0'),'+91'+farmer_number.lstrip('0'),'91'+farmer_number.lstrip('0')]
     farmer = Farmers.objects.filter(phone__in=farmer_no)
@@ -777,13 +778,13 @@ def dynamic_response(request):
         name = str(farmer.name)
         amount = str(farmer.amount)
         text1 = 'हेलो आपका नाम '+ name  +' है.'
-        text2 = 'आप कैसे हो ' + name
-        text3 = 'मई आपको ' + amount +' रुपये का प्यार करती हू.'
-        text4 = 'बाय बाय स्वीटहार्ट'
+        text1 += 'आप कैसे हो ' + name
+        text1 += 'मई आपको ' + amount +' रुपये का प्यार करती हू.'
+        text1 += 'बाय बाय स्वीटहार्ट'
         url = make_request(request_url+text1)
-        url = url + '\n' + make_request(request_url+text2)
-        url = url + '\n' + make_request(request_url+text3)
-        url = url + '\n' + make_request(request_url+text4)
+        #url = url + '\n' + make_request(request_url+text2)
+        #url = url + '\n' + make_request(request_url+text3)
+        #url = url + '\n' + make_request(request_url+text4)
     response = HttpResponse(url, content_type='text/plain')
     return response
 
