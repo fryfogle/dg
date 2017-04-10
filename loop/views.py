@@ -760,11 +760,12 @@ def helpline_offline(request):
 
 def make_request(url):
     response = requests.get(url)
-    print response.status
-    print response.response
-    return response.response
+    print response.status_code
+    print response.text
+    return response.text
 
 def dynamic_response(request):
+    print here
     print request.GET
     #url = 'https://s3.amazonaws.com/testivrdynamic/7420171.wav'# + '\n' + 'https://s3.amazonaws.com/testivrdynamic/7420172.wav'  
     call_id,farmer_number,dg_number,incoming_time = fetch_info_of_incoming_call(request)
