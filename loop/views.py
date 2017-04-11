@@ -782,11 +782,21 @@ def dynamic_response(request):
         farmer = farmer[0]
         name = str(farmer.name)
         amount = str(farmer.amount)
-        text1 = 'हेलो आपका नाम '+ name  +' है.'
-        text1 += 'आप कैसे हो ' + name
-        text1 += 'मई आपको ' + amount +' रुपये का प्यार करती हू.'
-        text1 += 'बाय बाय स्वीटहार्ट'
-        url = make_request(request_url+text1)
+        text1 = name
+        text2 = amount
+        #text1 = 'हेलो आपका नाम '+ name  +' है.'
+        #text1 += 'आप कैसे हो ' + name
+        #text1 += 'मई आपको ' + amount +' रुपये का प्यार करती हू.'
+        #text1 += 'बाय बाय स्वीटहार्ट'
+        url1 = make_request(request_url+text1)
+        url2 = make_request(request_url+text2)
+        url = 'https://s3.amazonaws.com/testivrdynamic/first.wav'
+        url += '\n' + url1
+        url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/second.wav'
+        url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/third.wav'
+        url += '\n' + url2
+        url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/fourth.wav'
+        print url
         #url = url + '\n' + make_request(request_url+text2)
         #url = url + '\n' + make_request(request_url+text3)
         #url = url + '\n' + make_request(request_url+text4)
