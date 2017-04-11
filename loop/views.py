@@ -2,6 +2,7 @@
 import json
 import xlsxwriter
 import requests
+import wave
 from django.http import JsonResponse
 from io import BytesIO
 from threading import Thread
@@ -775,7 +776,8 @@ def dynamic_response(request):
     #url = 'https://s3.amazonaws.com/testivrdynamic/7420171.wav'# + '\n' + 'https://s3.amazonaws.com/testivrdynamic/7420172.wav'  
     #call_id,farmer_number,dg_number,incoming_time = fetch_info_of_incoming_call(request)
     farmer_number = str(request.GET.getlist('From')[0])
-    request_url = "http://ivrapi.indiantts.co.in/tts?type=indiantts&api_key=2beeac80-095d-11e7-9f56-2f87492859b0&user_id=8937&audioformat=wav&samplerate=8000&numeric=hcurrency&channelType=mono&text="
+    #request_url = "http://ivrapi.indiantts.co.in/tts?type=indiantts&api_key=2beeac80-095d-11e7-9f56-2f87492859b0&user_id=8937&audioformat=wav&samplerate=8000&numeric=hcurrency&channelType=mono&text="
+    request_url = "http://ivrapi.indiantts.co.in/tts?type=indiantts&api_key=2beeac80-095d-11e7-9f56-2f87492859b0&user_id=8937&audioformat=wav&samplerate=8000&numeric=hcurrency&channelType=mono&action=play&text="
     farmer_no = [farmer_number,farmer_number.lstrip('0'),'+91'+farmer_number.lstrip('0'),'91'+farmer_number.lstrip('0')]
     farmer = Farmers.objects.filter(phone__in=farmer_no)
     if len(farmer) > 0:
@@ -788,18 +790,43 @@ def dynamic_response(request):
         #text1 += 'आप कैसे हो ' + name
         #text1 += 'मई आपको ' + amount +' रुपये का प्यार करती हू.'
         #text1 += 'बाय बाय स्वीटहार्ट'
-        url1 = make_request(request_url+text1)
-        url2 = make_request(request_url+text2)
-        url = 'https://s3.amazonaws.com/testivrdynamic/first.wav'
-        url += '\n' + url1
-        url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/second.wav'
-        url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/third.wav'
-        url += '\n' + url2
-        url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/fourth.wav'
-        print url
+        #url1 = make_request(request_url+text1)
+        #url2 = make_request(request_url+text2)
+        r = requests.get(request_url+text1)
+        with open('aa.wav','wb') as ss:
+            ss.write(r.content)
+        r = requests.get(request_url+text2)
+        with open('bb.wav','wb') as ss:
+            ss.write(r.content)
+        infiles = ["first.wav","aa.wav","second.wav","third.wav","bb.wav","fourth.wav"]
+        outfile = "final.wav"
+        data= []
+        for infile in infiles:
+            w = wave.open(infile, 'rb')
+            print w.getnframes()
+            print w.getparams()
+            data.append( [w.getparams(), w.readframes(w.getnframes())] )
+            w.close()
+        output = wave.open(outfile, 'wb')
+        output.setparams(data[0][0])
+        output.writeframes(data[0][1])
+        output.writeframes(data[1][1])
+        output.writeframes(data[2][1])
+        output.writeframes(data[3][1])
+        output.writeframes(data[4][1])
+        output.writeframes(data[5][1])
+        output.close()
+        #url = 'https://s3.amazonaws.com/testivrdynamic/first.wav'
+        #url += '\n' + url1
+        #url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/second.wav'
+        #url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/third.wav'
+        #url += '\n' + url2
+        #url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/fourth.wav'
+        #print url
         #url = url + '\n' + make_request(request_url+text2)
         #url = url + '\n' + make_request(request_url+text3)
         #url = url + '\n' + make_request(request_url+text4)
+        url = 'https://s3.amazonaws.com/testivrdynamic/first.wav'
     response = HttpResponse(url, content_type='text/plain')
     return response
 
