@@ -785,7 +785,7 @@ def dynamic_response(request):
         name = str(farmer.name)
         amount = str(farmer.amount)
         text1 = name
-        text2 = str(farmer_no)
+        text2 = str(farmer_number)
         #text1 = 'हेलो आपका नाम '+ name  +' है.'
         #text1 += 'आप कैसे हो ' + name
         #text1 += 'मई आपको ' + amount +' रुपये का प्यार करती हू.'
