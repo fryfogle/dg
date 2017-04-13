@@ -790,8 +790,9 @@ def dynamic_response(request):
         #text1 += 'आप कैसे हो ' + name
         #text1 += 'मई आपको ' + amount +' रुपये का प्यार करती हू.'
         #text1 += 'बाय बाय स्वीटहार्ट'
-        #url1 = make_request(request_url+text1)
-        #url2 = make_request(request_url+text2)
+        url1 = make_request(request_url+text1)
+        url2 = make_request(request_url+text2)
+        '''
         r = requests.get(request_url+text1)
         with open('aa.wav','wb') as ss:
             ss.write(r.content)
@@ -816,17 +817,18 @@ def dynamic_response(request):
         output.writeframes(data[4][1])
         output.writeframes(data[5][1])
         output.close()
-        #url = 'https://s3.amazonaws.com/testivrdynamic/first.wav'
-        #url += '\n' + url1
-        #url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/second.wav'
+        '''
+        url = 'https://s3.amazonaws.com/testivrdynamic/one.wav'
+        url += '\n' + url1
+        url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/two.wav'
         #url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/third.wav'
-        #url += '\n' + url2
-        #url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/fourth.wav'
+        url += '\n' + url2
+        url += '\n' + 'https://s3.amazonaws.com/testivrdynamic/three.wav'
         #print url
         #url = url + '\n' + make_request(request_url+text2)
         #url = url + '\n' + make_request(request_url+text3)
         #url = url + '\n' + make_request(request_url+text4)
-        url = 'https://s3.amazonaws.com/testivrdynamic/first.wav'
+        #url = 'https://s3.amazonaws.com/testivrdynamic/final_demo.wav'
     response = HttpResponse(url, content_type='text/plain')
     return response
 
