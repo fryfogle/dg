@@ -777,7 +777,7 @@ def dynamic_response(request):
     #call_id,farmer_number,dg_number,incoming_time = fetch_info_of_incoming_call(request)
     farmer_number = str(request.GET.getlist('From')[0])
     #request_url = "http://ivrapi.indiantts.co.in/tts?type=indiantts&api_key=2beeac80-095d-11e7-9f56-2f87492859b0&user_id=8937&audioformat=wav&samplerate=8000&numeric=hcurrency&channelType=mono&text="
-    request_url = "http://ivrapi.indiantts.co.in/tts?type=indiantts&api_key=2beeac80-095d-11e7-9f56-2f87492859b0&user_id=8937&audioformat=wav&samplerate=8000&numeric=hcurrency&channelType=mono&action=play&text="
+    request_url = "http://ivrapi.indiantts.co.in/tts?type=indiantts&api_key=2beeac80-095d-11e7-9f56-2f87492859b0&user_id=8937&audioformat=wav&samplerate=8000&numeric=hcurrency&channelType=mono&text="
     farmer_no = [farmer_number,farmer_number.lstrip('0'),'+91'+farmer_number.lstrip('0'),'91'+farmer_number.lstrip('0')]
     farmer = Farmers.objects.filter(phone__in=farmer_no)
     if len(farmer) > 0:
