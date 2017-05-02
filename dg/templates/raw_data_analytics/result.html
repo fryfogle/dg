@@ -61,6 +61,9 @@
     <!-- Implementation Note: the user-id data attribute on the body below must be present on page load for like functionality to work -->
     <body data-controller="{% if header.jsController %}{{header.jsController}}{% else %}DigitalGreenPage{% endif %}" data-user-id={{request.user.id}}>
         <!-- Begin Main Wrapper -->
+        <div id="downloadingDiv" style="background: #e9e9e9;display: none;position: absolute;top: 0;right: 0;bottom: 0;left: 0;opacity: 0.7;">
+                        <div id="loading-img" style="background: url({{STATIC_URL}}/assets/styles/loading.gif) center center no-repeat;height: 70%; z-index: 20;"></div>
+                    </div>
         <div class="wrapper-main wrapper">
             <div class="user-dropdown-div">
                 <div class="user-dropdown js-user-dropdown">

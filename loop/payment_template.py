@@ -140,7 +140,7 @@ def format_web_request(request):
 
 def get_combined_data_and_sheets_formats(formatted_post_data):
     excel_output = BytesIO()
-    workbook = xlsxwriter.Workbook(excel_output)
+    workbook = xlsxwriter.Workbook(excel_output,{'constant_memory':True})
     # selecting a general font
     heading_format = set_format_for_heading(workbook=workbook,
                                            format_str={'bold':1, 'font_size': 9,
@@ -218,8 +218,6 @@ def prepare_value_data_generic(data):
     cell_format = data.get('cell_format')
     sheet_header = data.get('sheet_header')
     sheet_footer = data.get('sheet_footer')
-    print data_dict
-
     for sheet_index, sheet in enumerate(data_dict.keys()):
         sheet_data = data_dict.get(sheet).get('data')
         combined_data.append(sheet_data)
