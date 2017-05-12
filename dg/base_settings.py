@@ -205,6 +205,7 @@ INSTALLED_APPS = (
     'qacoco',
     'mrppayment',
     'smart_selects',
+    'hack4farming',
 )
 
 # Store these package names here as they may change in the future since

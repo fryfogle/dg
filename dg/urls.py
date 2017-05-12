@@ -10,6 +10,7 @@ import feeds.urls
 import raw_data_analytics.urls
 import loop.urls
 import qacoco.urls
+import hack4farming.urls
 
 import social_website.api_urls
 import social_website.urls
@@ -32,6 +33,7 @@ from static_site_views import spring_analytics
 from website_admin import website_admin
 from mcoco_admin import mcoco_admin
 from ivr_admin import ivr_admin
+from hack4farming.admin import hack4farming_admin
 import website_archive_urls
 import deoanalytics.urls
 
@@ -56,6 +58,9 @@ mcoco_admin.logout_template = 'social_website/home.html'
 ivr_admin.index_template = 'social_website/index.html'
 ivr_admin.login_template = 'social_website/login.html'
 ivr_admin.logout_template = 'social_website/home.html'
+hack4farming_admin.index_template = 'social_website/index.html'
+hack4farming_admin.login_template = 'social_website/login.html'
+hack4farming_admin.logout_template = 'social_website/home.html'
 
 urlpatterns = patterns('',
     (r'^', include(social_website.urls)),
@@ -94,7 +99,8 @@ urlpatterns = patterns('',
     (r'^training/', include(training.urls)),
     (r'^loop/', include(loop.urls)),
     (r'^raw_data_analytics/', include(raw_data_analytics.urls)),
-
+    (r'^hack4farming_admin/', include(hack4farming_admin.urls)),
+    (r'^hack4farming/', include(hack4farming.urls)),
     (r'^get_log/?$', send_updated_log),
     (r'^qa_get_log/?$', qa_send_updated_log),
     # End imports from dashboard
