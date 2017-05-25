@@ -262,6 +262,8 @@ class DistrictResource(BaseResource):
     state = fields.ForeignKey(StateResource, 'state', full=True)
 
     class Meta:
+        limit=0
+        max_limit=0
         queryset = District.objects.all()
         resource_name = 'district'
         authorization = Authorization()
