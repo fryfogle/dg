@@ -14,7 +14,7 @@ from django.forms import TextInput, Textarea
 from videos.models import Video
 from geographies.models import State, District, Block, Village
 from people.models import Animator, PersonGroup, Person
-from models import QACocoUser, QAReviewerCategory, QAReviewerName, VideoQualityReview, DisseminationQuality, AdoptionVerification, AdoptionNonNegotiableVerfication
+from models import QACocoUser, QAReviewerCategory, QAReviewerName, VideoQualityReview, DisseminationQuality, AdoptionVerification, AdoptionNonNegotiableVerfication, DataEntryVerification
 from forms import QACocoUserForm
 
 class QACocoUserAdmin(admin.ModelAdmin):
@@ -80,3 +80,10 @@ class PersonAdmin(admin.ModelAdmin):
 class PersonGroupAdmin(admin.ModelAdmin):
     def get_model_perms(self, request):
         return {}
+
+
+class DataEntryVerificationAdmin(admin.ModelAdmin):
+    list_display = ['block', 'dataverification_date', 'data_entry_operator_name', 
+                    'number_of_forms_verfied', 'verified_by', 'total_score', 'grade']
+    search_fields = ['block__name', 'data_entry_operator_name', 'dataverification_date']
+

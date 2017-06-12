@@ -29,6 +29,47 @@ EQUIPMENT_WORK = (
 	('1', 'Working'),
 	)
 
+DATA_UPDATE_SCREENING_CHOICES = (
+	('1', 'lag/gap <= 7 days (3)'),
+	('2', 'lag/gap <= 7 days (2)'),
+	('3', 'lag/gap <= 21 days (1)'),
+	('4', 'lag/gap  7 days (0)'),
+	)
+
+
+DATA_UPDATE_ADOPTION_CHOICES = (
+	('1', 'lag/gap <= 7 days (3)'),
+	('2', 'lag/gap <= 7 days (2)'),
+	('3', 'lag/gap <= 21 days (1)'),
+	('4', 'lag/gap  7 days (0)'),
+	)
+
+
+DATA_ENTERED_QUALITY_SCREENING_CHOICES = (
+	('1', 'Complete & accurate entries (3)'),
+	('2', 'Few Minor errors - wrong time mentioned, spelling mistakes (2)'),
+	('3', 'Significant errors - wrong entries of VO/Person/SHG/Date/Video (1)'),
+	)
+
+
+DATA_ENTERED_QUALITY_ADOPTION_CHOICES = (
+	('1', 'Complete & accurate entries (3)'),
+	('2', 'Few Minor errors - wrong time mentioned, spelling mistakes (2)'),
+	('3', 'Significant errors - wrong entries of VO/Person/SHG/Date/Video (1)'),
+	)
+
+GRADE = (
+    ('A', 'A'),
+    ('B', 'B'),
+    ('C', 'C'),
+)
+
+VERIFIED_BY_CHOICES = (
+    ('0', 'Digital Green'),
+    ('1', 'Partner'),
+)
+
+
 class QACocoModel(models.Model):
     user_created = models.ForeignKey(User, related_name ="%(app_label)s_%(class)s_created", editable = False, null=True, blank=True)
     time_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)

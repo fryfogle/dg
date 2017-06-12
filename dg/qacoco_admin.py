@@ -6,7 +6,7 @@ from videos.models import Video
 from geographies.models import State, District, Block, Village
 from people.models import Animator, Person, PersonGroup
 
-from qacoco.admin import QACocoUserAdmin, QAReviewerNameAdmin, VideoQualityReviewAdmin, DisseminationQualityAdmin, AdoptionVerificationAdmin, VideoAdmin, VillageAdmin, BlockAdmin, AnimatorAdmin, PersonGroupAdmin, PersonAdmin
+from qacoco.admin import QACocoUserAdmin, QAReviewerNameAdmin, VideoQualityReviewAdmin, DisseminationQualityAdmin, AdoptionVerificationAdmin, VideoAdmin, VillageAdmin, BlockAdmin, AnimatorAdmin, PersonGroupAdmin, PersonAdmin, DataEntryVerification, DataEntryVerificationAdmin
 
 
 class QACocoAdmin(AdminSite):
@@ -28,3 +28,4 @@ qacoco_admin.register(Block, VideoAdmin)
 qacoco_admin.register(Animator, VillageAdmin)
 qacoco_admin.register(Person, PersonAdmin)
 qacoco_admin.register(PersonGroup, PersonGroupAdmin)
+qacoco_admin.register(DataEntryVerification, DataEntryVerificationAdmin)

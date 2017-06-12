@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
 
 from qacoco.qa_data_log import delete_log, save_log
-from base_models import QACocoModel, SCORE_CHOICES, VIDEO_GRADE, APPROVAL, ADOPTED, EQUIPMENT_WORK
+from base_models import QACocoModel, SCORE_CHOICES, VIDEO_GRADE, APPROVAL, ADOPTED, EQUIPMENT_WORK, DATA_UPDATE_SCREENING_CHOICES, DATA_UPDATE_ADOPTION_CHOICES, DATA_ENTERED_QUALITY_SCREENING_CHOICES, DATA_ENTERED_QUALITY_ADOPTION_CHOICES, GRADE, VERIFIED_BY_CHOICES
 
 from geographies.models import District,Block,Village
 from programs.models import Partner
@@ -139,3 +139,36 @@ class AdoptionNonNegotiableVerfication(QACocoModel):
 
     def __unicode__(self):
         return  u'%s' % (self.id)
+
+
+class DataEntryVerification(QACocoModel):
+    block = models.ForeignKey(Block)
+    data_entry_operator_name = models.CharField(max_length=80, null=True, blank=False)
+    number_of_forms_verfied = models.IntegerField(null=True)
+    dataverification_date = models.DateField(null=True, blank=True)
+    data_update_screening = models.CharField(max_length=1, choices=DATA_UPDATE_SCREENING_CHOICES,
+                                             null=True, blank=False)
+    date_update_adoption = models.CharField(max_length=1, choices=DATA_UPDATE_ADOPTION_CHOICES,
+                                            null=True, blank=False)
+    data_entered_quality_screening = \
+        models.CharField(max_length=1, choices=DATA_ENTERED_QUALITY_SCREENING_CHOICES, null=True, blank=False)
+    data_entered_quality_adoption = \
+        models.CharField(max_length=1, choices=DATA_ENTERED_QUALITY_ADOPTION_CHOICES, null=True, blank=False)
+    total_score = models.IntegerField()
+    grade = models.CharField(max_length=1, choices=GRADE, null=True, blank=False)
+    verified_by = models.CharField(max_length=1, choices=VERIFIED_BY_CHOICES, blank=False)
+    remarks = models.TextField(null=True, blank=False)
+
+
+    def __unicode__(self):
+        return str(self.total_score)
+
+    class Meta:
+        verbose_name = "DataEntryVerfication"
+        verbose_name_plural = "DataEntryVerfications"
+
+
+post_save.connect(save_log, sender=DataEntryVerification)
+pre_delete.connect(delete_log, sender=DataEntryVerification)
+
+
