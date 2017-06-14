@@ -885,3 +885,10 @@ def broadcast_audio_request(request):
         return audio_url_response
     else:
         return HttpResponse(status=200)
+
+
+def test(request):
+    print request
+    print request.GET
+    print request.POST
+    return HttpResponse(status=200)
