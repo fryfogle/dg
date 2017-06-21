@@ -141,7 +141,7 @@ class Command(BaseCommand):
 				else:
 					wtr.writerow(['Screening not saved and duplicate also not exist',sc, "not saved"])
 
-
+		return
 		#saving pma
 		url = urllib2.urlopen('http://webservicesri.swalekha.in/Service.asmx/GetExportVedioScreeingMemberData?pUsername=admin&pPassword=JSLPSSRI')
 		contents = url.read()
