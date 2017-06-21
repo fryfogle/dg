@@ -28,22 +28,28 @@ class Command(BaseCommand):
 			try:
 				vc = c.find('Video').text
 			except Exception as e:
-				wtr.writerow(['video data missing (Member code ->)', pc, e])
-				jslps.other_error_count += 1
-				continue
+				vc = 1
+				#wtr.writerow(['video data missing (Member code ->)', pc, e])
+				#jslps.other_error_count += 1
+				#continue
 			da = datetime.datetime.strptime(c.find('DOA').text, '%d/%m/%Y')
 			de = datetime.datetime.strptime(c.find('DOE').text, '%d/%m/%Y')
 
 			try:
 				video = JSLPS_Video.objects.get(vc = vc)
 			except Exception as e:
-				wtr.writerow(['video not exist', vc, e])
-				continue
+				vc = 1
+				video = JSLPS_Video.objects.get(vc = vc)
+				#wtr.writerow(['video not exist', vc, e])
+				#continue
 			
 			person = JSLPS_Person.objects.filter(person_code = pc)
 			if len(person) == 0:
-				wtr.writerow(['person not exist', pc, "Person not found"])
-				continue
+				pc = 1
+				person = JSLPS_Person.objects.filter(person_code = pc)
+				person = person[0]
+				#wtr.writerow(['person not exist', pc, "Person not found"])
+				#continue
 			else:
 				person = person[0]
 				
