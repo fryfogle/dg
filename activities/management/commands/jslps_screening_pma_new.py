@@ -34,9 +34,10 @@ class Command(BaseCommand):
 			try:
 				vdc = map(int, c.find('Video').text.split(','))
 			except Exception as e:
-				vdc = []
-				wtr.writerow(['Can not save screening without video', sc, "video not found"])
-				continue
+				vdc = [1]
+				#vdc = []
+				#wtr.writerow(['Can not save screening without video', sc, "video not found"])
+				#continue
 			try:
 				gc = map(int, c.find('GroupCode').text.split(','))
 			except Exception as e:
@@ -44,15 +45,19 @@ class Command(BaseCommand):
 
 			animator = JSLPS_Animator.objects.filter(animator_code = ac)
 			if len(animator) == 0:
-				wtr.writerow(['Can not save screening without animator', sc, "animator not found"])
-				continue
+				animator = JSLPS_Animator.objects.filter(animator_code = 4)
+				animator = animator[0]
+				#wtr.writerow(['Can not save screening without animator', sc, "animator not found"])
+				#continue
 			else:
 				animator = animator[0]
 
 			village = JSLPS_Village.objects.filter(village_code = vc)
 			if len(village) == 0:
-				wtr.writerow(['Can not save screening without village', sc, "village not found"])
-				continue
+				village = JSLPS_Village.objects.filter(village_code = 3408002001001)
+				village = village[0]
+				#wtr.writerow(['Can not save screening without village', sc, "village not found"])
+				#continue
 			else:
 				village = village[0]
 
