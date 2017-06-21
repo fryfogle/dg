@@ -14,7 +14,7 @@ class Command(BaseCommand):
 	def handle(self, *args, **options):
 		
 		partner = Partner.objects.get(id = 24)
-		'''
+		
 		url = urllib2.urlopen('http://webservicesri.swalekha.in/Service.asmx/GetExportVedioScreeingMasterData?pUsername=admin&pPassword=JSLPSSRI')
 		contents = url.read()
 		xml_file = open("jslps_data_integration_files/screening.xml", 'w')
@@ -145,7 +145,7 @@ class Command(BaseCommand):
 				else:
 					wtr.writerow(['Screening not saved and duplicate also not exist',sc, "not saved"])
 
-		'''
+		
 		#saving pma
 		url = urllib2.urlopen('http://webservicesri.swalekha.in/Service.asmx/GetExportVedioScreeingMemberData?pUsername=admin&pPassword=JSLPSSRI')
 		contents = url.read()
