@@ -13,6 +13,7 @@ class Command(BaseCommand):
 	def handle(self, *args, **options):
 		
 		partner = Partner.objects.get(id = 24)
+		animator = Animator.objects.get(id=1342)
 		url = urllib2.urlopen('http://webservicesri.swalekha.in/Service.asmx/GetExportAdoptionData?pUsername=admin&pPassword=JSLPSSRI')
 		contents = url.read()
 		xml_file = open("jslps_data_integration_files/adoption.xml", 'w')
@@ -57,6 +58,7 @@ class Command(BaseCommand):
 				pap = PersonAdoptPractice(person = person.person,
 										  video = video.video,
 										  date_of_adoption = da,
+										  animator = animator,
 										  partner = partner)
 				pap.save()
 				jslps.new_count += 1
