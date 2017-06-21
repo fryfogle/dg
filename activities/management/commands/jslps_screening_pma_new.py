@@ -68,8 +68,11 @@ class Command(BaseCommand):
 				if len(vid) > 0:
 					videos.append(vid[0].video)
 			if len(videos) == 0:
-				wtr.writerow(['Can not save screening without video', sc, "video not found"])
-				continue
+				vid = JSLPS_Video.objects.filter(vc = 1)
+				if len(vid) > 0:
+					videos.append(vid[0].video)
+				#wtr.writerow(['Can not save screening without video', sc, "video not found"])
+				#continue
 			for g in gc:
 				grp = JSLPS_Persongroup.objects.filter(group_code = g)
 				if len(grp) > 0:
