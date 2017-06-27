@@ -142,7 +142,7 @@ class Command(BaseCommand):
 					jslps_screening_list = JSLPS_Screening.objects.filter(screenig_code=sc,screening=screening)
 					if len(jslps_screening_list) == 0:
 						jslps_screening = JSLPS_Screening(screenig_code=sc,screening=screening,
-											replaced_value = replaced_value))
+											replaced_value = replaced_value)
 						jslps_screening.save()
 					else:
 						jslps_screening = jslps_screening_list[0]
