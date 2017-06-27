@@ -26,6 +26,7 @@ class Command(BaseCommand):
 		tree = ET.parse('jslps_data_integration_files/screening.xml')
 		root = tree.getroot()
 		for c in root.findall('VedioScreeingMasterData'):
+			replaced_value = ''
 			sc = c.find('VDO_ID').text
 			vc = c.find('VillageCode').text
 			ac = c.find('AKMCode').text
@@ -36,6 +37,7 @@ class Command(BaseCommand):
 				vdc = map(int, c.find('Video').text.split(','))
 			except Exception as e:
 				vdc = [1]
+				replaced_value += 'video,'
 				#vdc = []
 				#wtr.writerow(['Can not save screening without video', sc, "video not found"])
 				#continue
@@ -51,6 +53,7 @@ class Command(BaseCommand):
 				#wtr.writerow(['Can not save screening without animator', sc, "animator not found"])
 				#continue
 			else:
+				replaced_value += 'animator,'
 				animator = animator[0]
 
 			village = JSLPS_Village.objects.filter(village_code = vc)
@@ -60,6 +63,7 @@ class Command(BaseCommand):
 				#wtr.writerow(['Can not save screening without village', sc, "village not found"])
 				#continue
 			else:
+				replaced_value += 'village,'
 				village = village[0]
 
 			groups = []
@@ -113,11 +117,13 @@ class Command(BaseCommand):
 					screening.save()
 				jslps_screening_list = JSLPS_Screening.objects.filter(screenig_code=sc)
 				if len(jslps_screening_list) == 0:
-					jslps_screening = JSLPS_Screening(screenig_code=sc,screening=screening)
+					jslps_screening = JSLPS_Screening(screenig_code=sc,screening=screening,
+										replaced_value = replaced_value)
 					jslps_screening.save()
 				else:
 					jslps_screening = jslps_screening_list[0]
 					jslps_screening.screening = screening
+					jslps_screening.replaced_value = replaced_value
 					jslps_screening.save()
 			else:
 				screening_list = Screening.objects.filter(date = sd,
@@ -135,12 +141,16 @@ class Command(BaseCommand):
 						screening.save()
 					jslps_screening_list = JSLPS_Screening.objects.filter(screenig_code=sc,screening=screening)
 					if len(jslps_screening_list) == 0:
-						jslps_screening = JSLPS_Screening(screenig_code=sc,screening=screening)
+						jslps_screening = JSLPS_Screening(screenig_code=sc,screening=screening,
+											replaced_value = replaced_value))
 						jslps_screening.save()
 					else:
 						jslps_screening = jslps_screening_list[0]
+						jslps_screening.replaced_value = replaced_value
 						if jslps_screening.screening == None:
 							jslps_screening.screening = screening
+							jslps_screening.save()
+						else:
 							jslps_screening.save()
 				else:
 					wtr.writerow(['Screening not saved and duplicate also not exist',sc, "not saved"])

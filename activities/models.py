@@ -176,3 +176,4 @@ class JSLPS_Screening(CocoModel):
     id = models.AutoField(primary_key=True)
     screenig_code = models.CharField(max_length=100)
     screening = models.ForeignKey(Screening, null=True, blank=True)
+    replaced_value = models.CharField(max_length=100, blank=True)
