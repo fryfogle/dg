@@ -2,7 +2,7 @@ from dg.settings import DATABASES
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import auth
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, render_to_response
 from django.db.models import Count, Sum, F
 from django.core.serializers.json import DjangoJSONEncoder
@@ -248,9 +248,38 @@ def year_month_wise_data(chart_name, result):
                 temp_dict_inner['data'].append([k,v])
             inner_data['innerData'].append(temp_dict_inner)
         final_data_list[chart_name].update(inner_data)
+
     except:
         final_data_list['error']="No data found for the filters applied"
     return final_data_list
+
+def jsonify(data):
+    if isinstance(data, dict):
+        json_data = dict()
+        for key, value in data.items():
+            if isinstance(value, list): # for lists
+                for i, item in enumerate(value):
+                    value[i] = jsonify(value[i])
+            if isinstance(value, unicode):
+                value = value.encode("utf-8")
+            if isinstance(value, dict): # for nested lists
+                value = jsonify(value)
+            if type(value).__module__=='numpy': # if value is numpy.*: > to python list
+                value = value.tolist()
+            json_data[key] = value
+        return json_data
+
+    elif isinstance(data, list):
+        for i, item in enumerate(data):
+            data[i] = jsonify(data[i])
+        return data
+    
+    elif type(data).__module__=='numpy':
+        data = data.tolist()
+        return data
+
+    elif isinstance(data, unicode):
+      return (data.encode("utf-8"))
 
 def graph_data(request):
     filter_args = extract_filters_request(request)
@@ -274,7 +303,9 @@ def graph_data(request):
         result = get_pandas_dataframe(sql_query)
         data_to_send = year_month_wise_data(filter_args['chart_name'], result)
 
-    return HttpResponse(json.dumps(data_to_send))
+    json_data = jsonify(data_to_send)
+    return HttpResponse(json.dumps(json_data), content_type='application/json')
+    #return HttpResponse(json.dumps(data_to_send), content_type='application/json')
 
 def dashboard(request):
     return render(request, 'analytics/dist/training/index.html')
