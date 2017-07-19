@@ -305,7 +305,6 @@ def graph_data(request):
 
     json_data = jsonify(data_to_send)
     return HttpResponse(json.dumps(json_data), content_type='application/json')
-    #return HttpResponse(json.dumps(data_to_send), content_type='application/json')
 
 def dashboard(request):
     return render(request, 'analytics/dist/training/index.html')
