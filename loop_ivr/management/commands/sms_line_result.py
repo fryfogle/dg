@@ -99,12 +99,12 @@ class Command(BaseCommand):
     def write_data(self,data):
         data_df = pd.DataFrame(data)
         writer = pd.ExcelWriter('sms_info_price.xlsx', engine='xlsxwriter')
-        df.to_excel(writer, sheet_name='sms_info')
+        data_df.to_excel(writer, sheet_name='sms_info')
         writer.save()
 
     def handle(self, *args, **options):
-        price_info_obj_list = PriceInfoIncoming.objects.filter(info_status__in=[0,1]).values('id','from_number','incoming_time',
-                                'info_status','query_code','price_result')
+        price_info_obj_list = list(PriceInfoIncoming.objects.filter(info_status__in=[0,1]).values('id','from_number','incoming_time',
+                                'info_status','query_code','price_result'))
         for price_info_dict in price_info_obj_list:
             query_code = price_info_dict['query_code'].split('**')
             if len(query_code) != 2:
