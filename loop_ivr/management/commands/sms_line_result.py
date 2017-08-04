@@ -1,6 +1,8 @@
 __author__ = 'Vikas Saini'
 
 import MySQLdb
+import itertools
+import pandas as pd
 
 from dg.settings import DATABASES
 
@@ -94,6 +96,11 @@ class Command(BaseCommand):
             return tuple(map(int,id_list)),1
         return tuple(map(int,requested_list.intersection(id_list))),0
 
+    def write_data(self,data):
+        data_df = pd.DataFrame(data)
+        writer = pd.ExcelWriter('sms_info_price.xlsx', engine='xlsxwriter')
+        df.to_excel(writer, sheet_name='sms_info')
+        writer.save()
 
     def handle(self, *args, **options):
         price_info_obj_list = PriceInfoIncoming.objects.filter(info_status__in=[0,1]).values('id','from_number','incoming_time',
@@ -110,3 +117,4 @@ class Command(BaseCommand):
             requested_date = price_info_dict['incoming_time']
             current_price_result = self.get_price_info(crop_list, mandi_list, requested_date, all_crop_flag, all_mandi_flag)
             price_info_dict['current_price_result'] = current_price_result
+        self.write_data(price_info_obj_list)
