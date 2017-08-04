@@ -1,7 +1,13 @@
 __author__ = 'Vikas Saini'
 
-from django.core.management.base import BaseCommand
+import MySQLdb
 
+from dg.settings import DATABASES
+
+from django.core.management.base import BaseCommand
+from django.db.models import get_model
+
+from loop.models import Crop, Mandi, CropLanguage
 from loop_ivr.models import PriceInfoIncoming
 
 from loop_ivr.utils.config import AGGREGATOR_SMS_NO, mandi_hi, indian_rupee, \
@@ -16,9 +22,9 @@ class Command(BaseCommand):
     crop_map = dict()
     mandi_map = dict()
     crop_in_hindi_map = dict()
-    all_crop = Crop.objects.filter(id__in=crop_list).values('id', 'crop_name')
-    all_mandi = Mandi.objects.filter(id__in=mandi_list).values('id', 'mandi_name')
-    crop_in_hindi = CropLanguage.objects.filter(language_id=1, crop_id__in=crop_list).values('crop_id', 'crop_name')
+    all_crop = Crop.objects.values('id', 'crop_name')
+    all_mandi = Mandi.objects.values('id', 'mandi_name')
+    crop_in_hindi = CropLanguage.objects.filter(language_id=1).values('crop_id', 'crop_name')
     for crop in all_crop:
        crop_map[crop['id']] = crop['crop_name']
     for mandi in all_mandi:
@@ -26,12 +32,25 @@ class Command(BaseCommand):
     for crop in crop_in_hindi:
         crop_in_hindi_map[crop['crop_id']] = crop['crop_name']
 
+    def run_query(self,query):
+        mysql_cn = MySQLdb.connect(host=DATABASES['default']['HOST'], port=DATABASES['default']['PORT'], 
+            user=DATABASES['default']['USER'] ,
+            passwd=DATABASES['default']['PASSWORD'],
+            db=DATABASES['default']['NAME'],
+            charset = 'utf8',
+            use_unicode = True)
+        cursor = mysql_cn.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        return rows
+
+
     def get_price_info(self, crop_list, mandi_list, requested_date, all_crop_flag, all_mandi_flag):
         price_info_list = []
         price_info_list.append(agg_sms_initial_line)
         today_date = datetime.now()
-        raw_query = raw_sql.last_three_trans.format('(%s)'%(crop_list[0],) if len(crop_list) == 1 else crop_list, '(%s)'%(mandi_list[0],) if len(mandi_list) == 1 else mandi_list, tuple((request_date-timedelta(days=day)).strftime('%Y-%m-%d') for day in range(0,3)))
-        query_result = run_query(raw_query)
+        raw_query = raw_sql.last_three_trans.format('(%s)'%(crop_list[0],) if len(crop_list) == 1 else crop_list, '(%s)'%(mandi_list[0],) if len(mandi_list) == 1 else mandi_list, tuple((requested_date-timedelta(days=day)).strftime('%Y-%m-%d') for day in range(0,3)))
+        query_result = self.run_query(raw_query)
         if not query_result:
             price_info_list.append(agg_sms_no_price_available)
         else:
