@@ -72,3 +72,12 @@ class SubscriptionLog(LoopModel):
 
     def __unicode__(self):
         return "%s (%s)" % (self.subscription, self.status)
+
+
+class SmsStatus(LoopModel) :
+    id = models.AutoField(primary_key=True)
+    price_info_incoming_id = models.ForeignKey(price_info_incoming)
+    sms_id = models.TextField(null=True, blank=True)
+    status = models.IntegerField(choices=SMS_INFO_STATUS, default=0)
+    delivery_time = models.DateTimeField()
+    api_call_time = models.DateTimeField()
