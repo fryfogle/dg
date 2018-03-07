@@ -14,7 +14,7 @@ import re
 
 from dg.settings import EXOTEL_HELPLINE_NUMBER
 
-from loop_ivr.models import PriceInfoIncoming, PriceInfoLog, SubscriptionLog
+from loop_ivr.models import PriceInfoIncoming, PriceInfoLog, SubscriptionLog, SmsStatus
 from loop_ivr.helper_function import get_valid_list, send_info, get_price_info, make_market_info_call, \
     send_info_using_textlocal, get_top_selling_crop_quantity_wise, get_crop_code_list, send_crop_code_sms_content, \
     send_wrong_query_sms_content
@@ -85,8 +85,12 @@ def textlocal_market_info_incoming_sms(request):
         current_time = datetime.now(timezone('Asia/Kolkata')).replace(tzinfo=None)
         price_info_incoming_obj = PriceInfoIncoming(call_id=msg_id, from_number=farmer_number, query_code=query_code,
                                     to_number=to_number, incoming_time=current_time, call_source=3, info_status=0)
+        sms_status_obj = SmsStatus(price_info_incoming_id=price_info_incoming_obj)
         try:
             price_info_incoming_obj.save()
+            sms_status_obj.save()
+            custom_id = sms_status_obj.id
+            print custom_id
         except Exception as e:
             # Save Errors in Logs
             module = 'textlocal_market_info_incoming_sms'

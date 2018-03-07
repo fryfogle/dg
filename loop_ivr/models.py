@@ -7,6 +7,7 @@ TYPE_OF_SUBSCRIBER = ((0, "Farmer"), (1, "Aggregator"), (2, "DG"), (3, "Other"))
 STATUS = ((0, "Inactive"), (1, "Active"))
 SMS_STATUS = ((0, "Pending"), (1, "Sent"), (2, "Failed"), (3, "Failed-DND"))
 CALL_SOURCE = ((1, "Exotel Call"), (2, "Textlocal Call"), (3, "Textlocal SMS"))
+SMS_INFO_STATUS = ((0, "D"), (1, "U"), (2, "P"), (3, "?"), (4, "E"), (5, "B"))
 
 class PriceInfoIncoming(LoopModel):
     id = models.AutoField(primary_key=True)
@@ -76,7 +77,7 @@ class SubscriptionLog(LoopModel):
 
 class SmsStatus(LoopModel) :
     id = models.AutoField(primary_key=True)
-    price_info_incoming_id = models.ForeignKey(price_info_incoming)
+    price_info_incoming_id = models.ForeignKey(PriceInfoIncoming)
     sms_id = models.TextField(null=True, blank=True)
     status = models.IntegerField(choices=SMS_INFO_STATUS, default=0)
     delivery_time = models.DateTimeField()

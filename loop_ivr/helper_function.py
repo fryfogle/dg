@@ -21,7 +21,7 @@ from loop.helpline_view import write_log
 
 from loop_ivr.utils.marketinfo import raw_sql, get_query
 from loop_ivr.utils.config import *
-from loop_ivr.models import PriceInfoLog, PriceInfoIncoming
+from loop_ivr.models import PriceInfoLog, PriceInfoIncoming, SmsStatus
 
 from loop_ivr.outliers.removal import remove_crop_outliers
 import logging
